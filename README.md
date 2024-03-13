@@ -1,12 +1,13 @@
 # [Mорской Бой](<https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D1%80%D1%81%D0%BA%D0%BE%D0%B9_%D0%B1%D0%BE%D0%B9_(%D0%B8%D0%B3%D1%80%D0%B0)>)
 
-Этот проект написан в пяти файлах:
+Основа проекта в шести файлах:
 
-- main.py(главный файл)
+- **main.py**(главный файл)
+- **Grid.py**(класс для сетки)
 - **global_variable.py**(глобальные переменные)
-- button.py(кнопки)
-- draw.py(рисует корабли и тд)
-- **dotted_and_hit.py**(вспомогательная функция)
+- **button.py**(кнопки)
+- **draw.py**(рисует корабли и тд)
+- **dotted_and_hit.py**(вспомогательная функция)<br>
   Используются библиотеки [pygame](https://www.pygame.org/docs/), [random](https://docs.python.org/3/library/random.html), [copy](https://docs.python.org/3/library/copy.html), [asyncio](https://docs.python.org/3/library/asyncio.html)
 
 ---
