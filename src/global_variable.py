@@ -1,6 +1,6 @@
 import pygame
 import copy
-from draw import ships
+from drawer import Shipyard
 
 pygame.init()
 WH = (255, 255, 255)
@@ -18,8 +18,8 @@ ava_to_fire_set = set((a, b) for a in range(1, 11) for b in range(1, 11))
 around_hit_set = set()
 hit_Bl = set()
 dotted = set()
-dotted_to_shoot = set()
-for_comp_to_shoot = set()
+dotted_to_shot = set()
+for_comp_to_shot = set()
 last_hits = []
 destroyed_ships = []
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
@@ -30,7 +30,30 @@ font_sz = int(block_sz / 1.5)
 font = pygame.font.SysFont('notosans', font_sz)
 gameover_f = pygame.font.SysFont('notosans', 3 * block_sz)
 
-human = ships()
+human = Shipyard()
 H_ships_w = copy.deepcopy(human.ships)
-computer = ships()
+computer = Shipyard()
 ship_w = copy.deepcopy(computer.ships)
+
+DISTANCE = 15
+GRID_SIZE = 10
+MAX_DELAY_FOR_COMPUTER_SHOT = 700
+MAX_DIGIT = 10
+MAX_COORDINATE_VALUE = 10
+MIN_COORDINATE_VALUE = 1
+MIN_X = 100
+MAX_X = 600
+MIN_Y = 80
+MAX_Y = 580
+GRID_OFFSET = 10
+RECTANGLE_X = 650
+RECTANGLE_Y = 332
+RECTANGLE_WIDTH = 154
+RECTANGLE_HEIGHT = 72
+MAX_X_OFFSET = 15
+BUTTON_BLOCK_OFFSET = 4
+BUTTON_MARGIN = 40
+TEXT_MARGIN = 20
+GRID_LIMIT = 11
+FIVE = 5
+SEVEN = 7
