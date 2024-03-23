@@ -27,11 +27,13 @@ class Grid(draw):
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
-            variables.screen.blit(num_ver, (variables.l_margin - (variables.block_sz // 2 + num_ver_width // 2) + self.offset * variables.block_sz,
-                                  variables.upp_margin + i * variables.block_sz + (variables.block_sz // 2 - num_ver_height // 2)))
+            variables.screen.blit(num_ver, (
+                variables.l_margin - (variables.block_sz // 2 + num_ver_width // 2) + self.offset * variables.block_sz,
+                variables.upp_margin + i * variables.block_sz + (variables.block_sz // 2 - num_ver_height // 2)))
 
             variables.screen.blit(letters_hor, (variables.l_margin + i * variables.block_sz + (variables.block_sz // 2 -
-                                                                                               letters_hor_width // 2) + self.offset * variables.block_sz, variables.upp_margin + 10 * variables.block_sz))
+                                                                                               letters_hor_width // 2) + self.offset * variables.block_sz,
+                                                variables.upp_margin + 10 * variables.block_sz))
 
     def __sign(self) -> None:
         """
@@ -40,4 +42,5 @@ class Grid(draw):
         player = variables.font.render(self.tl, True, variables.RED)
         sign_width = player.get_width()
         variables.screen.blit(player, (variables.l_margin + 5 * variables.block_sz - sign_width // 2 +
-                                       self.offset * variables.block_sz, variables.upp_margin - variables.block_sz // 2 - variables.font_sz))
+                                       self.offset * variables.block_sz,
+                                       variables.upp_margin - variables.block_sz // 2 - variables.font_sz))

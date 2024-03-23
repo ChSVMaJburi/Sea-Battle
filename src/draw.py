@@ -3,17 +3,22 @@ import global_variable as variables
 from dotted_and_hit import dotted_and_hit
 import pygame
 import random
+
 pygame.init()
 
 
 class draw:
     def grid(offset: int) -> None:
         for i in range(11):
-            pygame.draw.line(variables.screen, variables.BL, (variables.l_margin + offset * variables.block_sz, variables.upp_margin + i * variables.block_sz),
-                             (variables.l_margin + (10 + offset) * variables.block_sz, variables.upp_margin + i * variables.block_sz), 1)
+            pygame.draw.line(variables.screen, variables.BL, (
+                variables.l_margin + offset * variables.block_sz, variables.upp_margin + i * variables.block_sz),
+                             (variables.l_margin + (10 + offset) * variables.block_sz,
+                              variables.upp_margin + i * variables.block_sz), 1)
 
-            pygame.draw.line(variables.screen, variables.BL, (variables.l_margin + (i + offset) * variables.block_sz, variables.upp_margin),
-                             (variables.l_margin + (i + offset) * variables.block_sz, variables.upp_margin + 10 * variables.block_sz), 1)
+            pygame.draw.line(variables.screen, variables.BL,
+                             (variables.l_margin + (i + offset) * variables.block_sz, variables.upp_margin),
+                             (variables.l_margin + (i + offset) * variables.block_sz,
+                              variables.upp_margin + 10 * variables.block_sz), 1)
 
     def ship(ships_coor_list: List[Tuple[int, int]]) -> None:
         """
@@ -34,17 +39,20 @@ class draw:
             if ships_coor_list == variables.human.ships:
                 x += 15 * variables.block_sz
             pygame.draw.rect(variables.screen, variables.BL, ((
-                x, y), (ship_w, ship_h)), width=variables.block_sz//10)
+                                                                  x, y), (ship_w, ship_h)),
+                             width=variables.block_sz // 10)
 
     def dotted(dotted: Set[Tuple[int, int]]) -> None:
         """
         Рисует точки в центре всех блоков в dotted
         """
         for i in dotted:
-            pygame.draw.circle(variables.screen, variables.BL, (variables.block_sz*(
-                i[0]-0.5)+variables.l_margin, variables.block_sz*(i[1]-0.5)+variables.upp_margin), variables.block_sz//5)
+            pygame.draw.circle(variables.screen, variables.BL, (variables.block_sz * (
+                    i[0] - 0.5) + variables.l_margin, variables.block_sz * (i[1] - 0.5) + variables.upp_margin),
+                               variables.block_sz // 5)
 
-    def destroyed_ships(pos: int, oppo_ships_list: List[Set[Tuple[int, int]]], comp_turn: bool, diagonal_only: bool = False) -> None:
+    def destroyed_ships(pos: int, oppo_ships_list: List[Set[Tuple[int, int]]], comp_turn: bool,
+                        diagonal_only: bool = False) -> None:
         """
         Добавляет блоки до и после корабля в dotted_set, чтобы нарисовать на них точки.
         Добавляет все блоки на корабле в hit_bl, установленные для рисования крестиков внутри разрушенного корабля.
@@ -62,17 +70,18 @@ class draw:
         Рисует "X" в блоках, которые были успешно поражены либо компьютером, либо человеком
         """
         for block in hit_Bl:
-            x1 = variables.block_sz * (block[0]-1) + variables.l_margin
-            y1 = variables.block_sz * (block[1]-1) + variables.upp_margin
+            x1 = variables.block_sz * (block[0] - 1) + variables.l_margin
+            y1 = variables.block_sz * (block[1] - 1) + variables.upp_margin
             pygame.draw.line(variables.screen, variables.BL, (x1, y1), (x1 +
-                                                                        variables.block_sz, y1+variables.block_sz), variables.block_sz//7)
-            pygame.draw.line(variables.screen, variables.BL, (x1, y1+variables.block_sz),
-                            (x1+variables.block_sz, y1), variables.block_sz//7)
+                                                                        variables.block_sz, y1 + variables.block_sz),
+                             variables.block_sz // 7)
+            pygame.draw.line(variables.screen, variables.BL, (x1, y1 + variables.block_sz),
+                             (x1 + variables.block_sz, y1), variables.block_sz // 7)
 
 
 class ships(draw):
     def __init__(self):
-        self.ava_Bl = set((a, b)for a in range(1, 11) for b in range(1, 11))
+        self.ava_Bl = set((a, b) for a in range(1, 11) for b in range(1, 11))
         self.ships_set = set()
         self.ships = self.grid()
 
@@ -128,8 +137,8 @@ class ships(draw):
         for i in ship:
             for j in range(-1, 2):
                 for m in range(-1, 2):
-                    if 0 < (i[0]+j) < 11 and 0 < (i[1]+m) < 11:
-                        self.ava_Bl.discard((i[0]+j, i[1]+m))
+                    if 0 < (i[0] + j) < 11 and 0 < (i[1] + m) < 11:
+                        self.ava_Bl.discard((i[0] + j, i[1] + m))
 
     def grid(self) -> List[List[Tuple[int, int]]]:
         """
@@ -140,7 +149,7 @@ class ships(draw):
         """
         ships_coor = []
         for i in range(1, 5):
-            for _ in range(5-i):
+            for _ in range(5 - i):
                 ship = self.create_ship(i, self.ava_Bl)
                 ships_coor.append(ship)
                 self.add_new_ship(ship)

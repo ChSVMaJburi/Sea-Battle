@@ -2,7 +2,6 @@ import pygame
 import copy
 from draw import ships
 
-
 pygame.init()
 WH = (255, 255, 255)
 BL = (0, 0, 0)
@@ -15,7 +14,7 @@ block_sz = 50
 l_margin = 100
 upp_margin = 80
 size = (l_margin + 30 * block_sz, upp_margin + 15 * block_sz)
-ava_to_fire_set = set((a, b)for a in range(1, 11) for b in range(1, 11))
+ava_to_fire_set = set((a, b) for a in range(1, 11) for b in range(1, 11))
 around_hit_set = set()
 hit_Bl = set()
 dotted = set()
