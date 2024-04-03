@@ -2,13 +2,15 @@ from button import Button
 import global_variable as my_space
 from drawer import Drawer
 from Grid import Grid
+import copy
+from drawer import ShipDrawer
 
 import pygame
 import game_logic as logic
 
 pygame.init()
 
-st_game = my_space.l_margin + my_space.GRID_SIZE * my_space.block_sz
+st_game = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
 st_button = Button(st_game, "START GAME")
 
 
@@ -26,7 +28,8 @@ def display_the_start_screen():
                 flag = False
         pygame.display.update()
         my_space.screen.fill(my_space.BLUE,
-                         (my_space.RECTANGLE_X, my_space.RECTANGLE_Y, my_space.RECTANGLE_WIDTH, my_space.RECTANGLE_HEIGHT))
+                             (my_space.RECTANGLE_X, my_space.RECTANGLE_Y, my_space.RECTANGLE_WIDTH,
+                              my_space.RECTANGLE_HEIGHT))
     return flag
 
 
@@ -37,12 +40,12 @@ def gameplay(game_over: bool, comp_turn: bool, flag: bool):
         elif not comp_turn and i.type == pygame.MOUSEBUTTONDOWN:
             x, y = i.pos
             if my_space.MIN_X <= x <= my_space.MAX_X and my_space.MIN_Y <= y <= my_space.MAX_Y:
-                if (my_space.l_margin < x < my_space.l_margin + my_space.GRID_OFFSET * my_space.block_sz) and (
-                        my_space.upp_margin < y < my_space.upp_margin + my_space.GRID_OFFSET * my_space.block_sz):
+                if (my_space.LEFT_MARGIN < x < my_space.LEFT_MARGIN + my_space.GRID_OFFSET * my_space.BLOCK_SIZE) and (
+                        my_space.UP_MARGIN < y < my_space.UP_MARGIN + my_space.GRID_OFFSET * my_space.BLOCK_SIZE):
                     flag = 0
-                    shot_coordinates = ((x - my_space.l_margin) // my_space.block_sz + 1,
-                                        (y - my_space.upp_margin) // my_space.block_sz + 1)
-                    for i in my_space.hit_Bl:
+                    shot_coordinates = ((x - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
+                                        (y - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
+                    for i in my_space.hit_blocks:
                         if i == shot_coordinates:
                             flag = 1
 
@@ -51,16 +54,21 @@ def gameplay(game_over: bool, comp_turn: bool, flag: bool):
                             flag = 1
                 if flag == 0:
                     comp_turn = not logic.hit_or_miss(
-                        shot_coordinates, my_space.ship_w, comp_turn)
+                        shot_coordinates, my_space.computer_ships, comp_turn)
 
     if comp_turn:
         if my_space.around_hit_set:
             comp_turn = logic.shot(my_space.around_hit_set)
         else:
-            comp_turn = logic.shot(my_space.ava_to_fire_set)
+            comp_turn = logic.shot(my_space.available_to_fire_set)
     return game_over, comp_turn, flag
 
+
 def play():
+    my_space.human = ShipDrawer()
+    my_space.human_ships = copy.deepcopy(my_space.human.ships)
+    my_space.computer = ShipDrawer()
+    my_space.computer_ships = copy.deepcopy(my_space.computer.ships)
     my_space.screen.fill(my_space.BLUE)
     Grid("COMPUTER", 0)
     Grid("HUMAN", my_space.DISTANCE)
@@ -71,14 +79,14 @@ def play():
     while not game_over:
         game_over, comp_turn, flag = gameplay(game_over, comp_turn, flag)
         Drawer.dotted(my_space.dotted)
-        Drawer.hit_blocks(my_space.hit_Bl)
+        Drawer.hit_blocks(my_space.hit_blocks)
         Drawer.ship(my_space.destroyed_ships)
         if not my_space.computer.ships_set:
             show_mess(
-                "YOU WIN!", (0, 0, my_space.size[0], my_space.size[1]), my_space.gameover_f)
+                "YOU WIN!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]), my_space.GAME_OVER)
         if not my_space.human.ships_set:
             show_mess(
-                "YOU LOSE!", (0, 0, my_space.size[0], my_space.size[1]), my_space.gameover_f)
+                "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]), my_space.GAME_OVER)
             Drawer.ship(my_space.computer.ships)
         pygame.display.update()
 
@@ -95,8 +103,8 @@ def show_mess(mess: str, rectangle: tuple, w_f=my_space.font):
     mess_r = pygame.Rect(rectangle)
     x = mess_r.centerx - mess_w / 2
     y = mess_r.centery - mess_h / 2
-    backgr_r = pygame.Rect(x - my_space.block_sz / 2,
-                           y, mess_w + my_space.block_sz, mess_h)
+    backgr_r = pygame.Rect(x - my_space.BLOCK_SIZE / 2,
+                           y, mess_w + my_space.BLOCK_SIZE, mess_h)
     mess_blit = w_f.render(mess, True, my_space.RED)
     my_space.screen.fill(my_space.BLUE, backgr_r)
     my_space.screen.blit(mess_blit, (x, y))

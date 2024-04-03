@@ -11,8 +11,8 @@ def shot(set_to_shot):
     """
     pygame.time.delay(my_space.MAX_DELAY_FOR_COMPUTER_SHOT)
     comp_fired = random.choice(tuple(set_to_shot))
-    my_space.ava_to_fire_set.discard(comp_fired)
-    return hit_or_miss(comp_fired, my_space.H_ships_w, True)
+    my_space.available_to_fire_set.discard(comp_fired)
+    return hit_or_miss(comp_fired, my_space.human_ships, True)
 
 
 def update_around_comp_hit(shot_coordinates, computer_hits=True):
@@ -70,8 +70,8 @@ def update_around_comp_hit(shot_coordinates, computer_hits=True):
 
     my_space.around_hit_set -= my_space.dotted_to_shot
     my_space.around_hit_set -= my_space.for_comp_to_shot
-    my_space.ava_to_fire_set -= my_space.around_hit_set
-    my_space.ava_to_fire_set -= my_space.dotted_to_shot
+    my_space.available_to_fire_set -= my_space.around_hit_set
+    my_space.available_to_fire_set -= my_space.dotted_to_shot
 
 
 def hit_or_miss(shot_coordinates, opponent_ships, comp_turn):

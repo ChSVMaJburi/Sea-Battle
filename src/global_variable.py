@@ -1,22 +1,20 @@
 import pygame
-import copy
-from drawer import ShipDrawer
 
 pygame.init()
-WH = (255, 255, 255)
-BL = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 BLUE = (0, 180, 180)
 RED = (255, 0, 0)
-GR = (0, 200, 50)
-L_GRAY = (100, 200, 0)
-RB = (75, 0, 0)
-block_sz = 50
-l_margin = 100
-upp_margin = 80
-size = (l_margin + 30 * block_sz, upp_margin + 15 * block_sz)
-ava_to_fire_set = set((a, b) for a in range(1, 11) for b in range(1, 11))
+GREY = (0, 200, 50)
+LIGHT_GRAY = (100, 200, 0)
+DARK_RED = (75, 0, 0)
+BLOCK_SIZE = 50
+LEFT_MARGIN = 100
+UP_MARGIN = 80
+SIZE = (LEFT_MARGIN + 30 * BLOCK_SIZE, UP_MARGIN + 15 * BLOCK_SIZE)
+available_to_fire_set = set((a, b) for a in range(1, 11) for b in range(1, 11))
 around_hit_set = set()
-hit_Bl = set()
+hit_blocks = set()
 dotted = set()
 dotted_to_shot = set()
 for_comp_to_shot = set()
@@ -25,15 +23,14 @@ destroyed_ships = []
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
 pygame.display.set_caption("Sea Battle")
-screen = pygame.display.set_mode(size)
-font_sz = int(block_sz / 1.5)
-font = pygame.font.SysFont('notosans', font_sz)
-gameover_f = pygame.font.SysFont('notosans', 3 * block_sz)
-
-human = ShipDrawer()
-H_ships_w = copy.deepcopy(human.ships)
-computer = ShipDrawer()
-ship_w = copy.deepcopy(computer.ships)
+screen = pygame.display.set_mode(SIZE)
+FONT_SIZE = int(BLOCK_SIZE / 1.5)
+font = pygame.font.SysFont('notosans', FONT_SIZE)
+GAME_OVER = pygame.font.SysFont('notosans', 3 * BLOCK_SIZE)
+human = ""
+computer = ""
+human_ships = ""
+computer_ships = ""
 
 DISTANCE = 15
 GRID_SIZE = 10

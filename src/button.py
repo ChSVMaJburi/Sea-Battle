@@ -15,16 +15,16 @@ class Button:
     def __init__(self, x_ofs: int, button1: str):
         self.__tl = button1
         self.__tl_w, self.__tl_h = my_space.font.size(self.__tl)
-        self.__button_w = self.__tl_w + my_space.block_sz
-        self.__button_h = self.__tl_h + my_space.block_sz
-        self.__x = x_ofs + my_space.block_sz
-        self.__y = my_space.upp_margin + my_space.BUTTON_BLOCK_OFFSET * \
-                   my_space.block_sz + self.__button_h
+        self.__button_w = self.__tl_w + my_space.BLOCK_SIZE
+        self.__button_h = self.__tl_h + my_space.BLOCK_SIZE
+        self.__x = x_ofs + my_space.BLOCK_SIZE
+        self.__y = my_space.UP_MARGIN + my_space.BUTTON_BLOCK_OFFSET * \
+                   my_space.BLOCK_SIZE + self.__button_h
         self.draw = self.__x, self.__y - my_space.TEXT_MARGIN, self.__button_w - my_space.BUTTON_MARGIN, self.__button_h
         self.rect = pygame.Rect(self.draw)
         self.__button_tl = self.__x + self.__button_w // 2 - self.__tl_w // 2 - \
                            my_space.TEXT_MARGIN, self.__y + self.__button_h // 2 - self.__tl_h // 2 - my_space.TEXT_MARGIN
-        self.__cl = my_space.L_GRAY
+        self.__cl = my_space.LIGHT_GRAY
 
     def draw_button(self, cl: Tuple[int, int, int] = None) -> None:
         """
@@ -45,4 +45,4 @@ class Button:
         """
         coord = pygame.mouse.get_pos()
         if self.rect.collidepoint(coord):
-            self.draw_button(my_space.GR)
+            self.draw_button(my_space.GREY)
