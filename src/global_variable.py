@@ -1,6 +1,6 @@
 import pygame
 import copy
-from drawer import Shipyard
+from drawer import ShipDrawer
 
 pygame.init()
 WH = (255, 255, 255)
@@ -30,9 +30,9 @@ font_sz = int(block_sz / 1.5)
 font = pygame.font.SysFont('notosans', font_sz)
 gameover_f = pygame.font.SysFont('notosans', 3 * block_sz)
 
-human = Shipyard()
+human = ShipDrawer()
 H_ships_w = copy.deepcopy(human.ships)
-computer = Shipyard()
+computer = ShipDrawer()
 ship_w = copy.deepcopy(computer.ships)
 
 DISTANCE = 15

@@ -1,5 +1,5 @@
 from typing import Set, List, Tuple
-import global_variable as glob
+import global_variable as my_space
 from dotted_and_hit import dotted_and_hit
 import pygame
 import random
@@ -10,15 +10,15 @@ pygame.init()
 class Drawer:
     def grid(offset: int) -> None:
         for i in range(11):
-            pygame.draw.line(glob.screen, glob.BL, (
-                glob.l_margin + offset * glob.block_sz, glob.upp_margin + i * glob.block_sz),
-                             (glob.l_margin + (glob.GRID_SIZE + offset) * glob.block_sz,
-                              glob.upp_margin + i * glob.block_sz), 1)
+            pygame.draw.line(my_space.screen, my_space.BL, (
+                my_space.l_margin + offset * my_space.block_sz, my_space.upp_margin + i * my_space.block_sz),
+                             (my_space.l_margin + (my_space.GRID_SIZE + offset) * my_space.block_sz,
+                              my_space.upp_margin + i * my_space.block_sz), 1)
 
-            pygame.draw.line(glob.screen, glob.BL,
-                             (glob.l_margin + (i + offset) * glob.block_sz, glob.upp_margin),
-                             (glob.l_margin + (i + offset) * glob.block_sz,
-                              glob.upp_margin + glob.GRID_SIZE * glob.block_sz), 1)
+            pygame.draw.line(my_space.screen, my_space.BL,
+                             (my_space.l_margin + (i + offset) * my_space.block_sz, my_space.upp_margin),
+                             (my_space.l_margin + (i + offset) * my_space.block_sz,
+                              my_space.upp_margin + my_space.GRID_SIZE * my_space.block_sz), 1)
 
     def ship(ships_coord_list: List[Tuple[int, int]]) -> None:
         """
@@ -30,26 +30,26 @@ class Drawer:
             ship = sorted(cur_coord)
             x_s = ship[0][0]
             y_s = ship[0][1]
-            ship_w = glob.block_sz * len(ship)
-            ship_h = glob.block_sz
+            ship_w = my_space.block_sz * len(ship)
+            ship_h = my_space.block_sz
             if len(ship) > 1 and ship[0][0] == ship[1][0]:
                 ship_w, ship_h = ship_h, ship_w
-            x = glob.block_sz * (x_s - 1) + glob.l_margin
-            y = glob.block_sz * (y_s - 1) + glob.upp_margin
-            if ships_coord_list == glob.human.ships:
-                x += 15 * glob.block_sz
-            pygame.draw.rect(glob.screen, glob.BL, ((
+            x = my_space.block_sz * (x_s - 1) + my_space.l_margin
+            y = my_space.block_sz * (y_s - 1) + my_space.upp_margin
+            if ships_coord_list == my_space.human.ships:
+                x += 15 * my_space.block_sz
+            pygame.draw.rect(my_space.screen, my_space.BL, ((
                                                         x, y), (ship_w, ship_h)),
-                             width=glob.block_sz // glob.GRID_SIZE)
+                             width=my_space.block_sz // my_space.GRID_SIZE)
 
     def dotted(dotted: Set[Tuple[int, int]]) -> None:
         """
         Рисует точки в центре всех блоков в dotted
         """
         for i in dotted:
-            pygame.draw.circle(glob.screen, glob.BL, (glob.block_sz * (
-                    i[0] - 0.5) + glob.l_margin, glob.block_sz * (i[1] - 0.5) + glob.upp_margin),
-                               glob.block_sz // glob.FIVE)
+            pygame.draw.circle(my_space.screen, my_space.BL, (my_space.block_sz * (
+                    i[0] - 0.5) + my_space.l_margin, my_space.block_sz * (i[1] - 0.5) + my_space.upp_margin),
+                               my_space.block_sz // my_space.FIVE)
 
     def destroyed_ships(pos: int, opponent_ships: List[Set[Tuple[int, int]]], comp_turn: bool,
                         diagonal_only: bool = False) -> None:
@@ -57,10 +57,10 @@ class Drawer:
         Добавляет блоки до и после корабля в dotted_set, чтобы нарисовать на них точки.
         Добавляет все блоки на корабле в hit_blocks, установленные для рисования крестиков внутри разрушенного корабля.
         """
-        if opponent_ships == glob.ship_w:
-            ships_list = glob.computer.ships
-        elif opponent_ships == glob.H_ships_w:
-            ships_list = glob.human.ships
+        if opponent_ships == my_space.ship_w:
+            ships_list = my_space.computer.ships
+        elif opponent_ships == my_space.H_ships_w:
+            ships_list = my_space.human.ships
         ship = sorted(ships_list[pos])
         for i in range(-1, 1):
             dotted_and_hit(ship[i], comp_turn, diagonal_only)
@@ -70,16 +70,16 @@ class Drawer:
         Рисует "X" в блоках, которые были успешно поражены либо компьютером, либо человеком
         """
         for block in hit_blocks:
-            x1 = glob.block_sz * (block[0] - 1) + glob.l_margin
-            y1 = glob.block_sz * (block[1] - 1) + glob.upp_margin
-            pygame.draw.line(glob.screen, glob.BL, (x1, y1), (x1 +
-                                                              glob.block_sz, y1 + glob.block_sz),
-                             glob.block_sz // glob.SEVEN)
-            pygame.draw.line(glob.screen, glob.BL, (x1, y1 + glob.block_sz),
-                             (x1 + glob.block_sz, y1), glob.block_sz // glob.SEVEN)
+            x1 = my_space.block_sz * (block[0] - 1) + my_space.l_margin
+            y1 = my_space.block_sz * (block[1] - 1) + my_space.upp_margin
+            pygame.draw.line(my_space.screen, my_space.BL, (x1, y1), (x1 +
+                                                              my_space.block_sz, y1 + my_space.block_sz),
+                             my_space.block_sz // my_space.SEVEN)
+            pygame.draw.line(my_space.screen, my_space.BL, (x1, y1 + my_space.block_sz),
+                             (x1 + my_space.block_sz, y1), my_space.block_sz // my_space.SEVEN)
 
 
-class Shipyard(Drawer):
+class ShipDrawer(Drawer):
     def __init__(self):
         self.available_blocks = set((a, b) for a in range(1, 11) for b in range(1, 11))
         self.ships_set = set()

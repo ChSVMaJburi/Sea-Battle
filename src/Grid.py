@@ -1,4 +1,4 @@
-import global_variable as glob
+import global_variable as my_space
 from drawer import Drawer
 
 
@@ -19,28 +19,28 @@ class Grid(Drawer):
         Рисует цифры 1-10 по вертикали и добавляет буквы под горизонталью
         линии для обеих сеток
         """
-        for i in range(glob.MAX_DIGIT):
-            num_ver = glob.font.render(str(i + 1), True, glob.BL)
-            letters_hor = glob.font.render(
-                glob.LETTERS[i], True, glob.BL)
+        for i in range(my_space.MAX_DIGIT):
+            num_ver = my_space.font.render(str(i + 1), True, my_space.BL)
+            letters_hor = my_space.font.render(
+                my_space.LETTERS[i], True, my_space.BL)
             num_ver_width = num_ver.get_width()
             num_ver_height = num_ver.get_height()
             letters_hor_width = letters_hor.get_width()
 
-            glob.screen.blit(num_ver, (
-                glob.l_margin - (glob.block_sz // 2 + num_ver_width // 2) + self.offset * glob.block_sz,
-                glob.upp_margin + i * glob.block_sz + (glob.block_sz // 2 - num_ver_height // 2)))
+            my_space.screen.blit(num_ver, (
+                my_space.l_margin - (my_space.block_sz // 2 + num_ver_width // 2) + self.offset * my_space.block_sz,
+                my_space.upp_margin + i * my_space.block_sz + (my_space.block_sz // 2 - num_ver_height // 2)))
 
-            glob.screen.blit(letters_hor, (glob.l_margin + i * glob.block_sz + (glob.block_sz // 2 -
-                                                                                letters_hor_width // 2) + self.offset * glob.block_sz,
-                                           glob.upp_margin + glob.GRID_SIZE * glob.block_sz))
+            my_space.screen.blit(letters_hor, (my_space.l_margin + i * my_space.block_sz + (my_space.block_sz // 2 -
+                                                                                letters_hor_width // 2) + self.offset * my_space.block_sz,
+                                           my_space.upp_margin + my_space.GRID_SIZE * my_space.block_sz))
 
     def __sign(self) -> None:
         """
         Помещает имена игроков в центр над сетками
         """
-        player = glob.font.render(self.tl, True, glob.RED)
+        player = my_space.font.render(self.tl, True, my_space.RED)
         sign_width = player.get_width()
-        glob.screen.blit(player, (glob.l_margin + 5 * glob.block_sz - sign_width // 2 +
-                                  self.offset * glob.block_sz,
-                                  glob.upp_margin - glob.block_sz // 2 - glob.font_sz))
+        my_space.screen.blit(player, (my_space.l_margin + 5 * my_space.block_sz - sign_width // 2 +
+                                  self.offset * my_space.block_sz,
+                                  my_space.upp_margin - my_space.block_sz // 2 - my_space.font_sz))
