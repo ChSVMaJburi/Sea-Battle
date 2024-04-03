@@ -1,10 +1,11 @@
 """Реализован класс Grid наследуемый от Drawer. Цель нарисовать начальную сетку"""
 import const_variables as const
-from drawer import Drawer
+from drawer import Drawer, draw_grid
 
 
 class Grid(Drawer):
     """Класс для рисования начальных сеток"""
+
     def __init__(self, title: str, offset: int) -> None:
         """
         title(str): Имена игроков будут отображаться в верхней части его сетки
@@ -14,7 +15,7 @@ class Grid(Drawer):
         self.offset = offset
         self.__add_nums_letters()
         self.__sign()
-        Drawer.grid(self.offset)
+        draw_grid(self.offset)
 
     def __add_nums_letters(self) -> None:
         """

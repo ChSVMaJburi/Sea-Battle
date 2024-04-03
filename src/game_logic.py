@@ -122,7 +122,7 @@ def hit_or_miss(shot_coordinates: tuple[int, int], opponent_ships: list,
             else:
                 const.COMPUTER.ships_set.discard(shot_coordinates)
             if not ship:
-                Drawer.destroyed_ships(position, opponent_ships, computer_turn)
+                Drawer.process_destroyed_ship(position, opponent_ships, computer_turn)
                 if computer_turn:
                     const.last_hits.clear()
                     const.around_hit_set.clear()

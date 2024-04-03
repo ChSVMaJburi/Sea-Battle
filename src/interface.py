@@ -79,21 +79,21 @@ def play():
     init_pygame()
     Grid("COMPUTER", 0)
     Grid("HUMAN", const.DISTANCE)
-    Drawer.ship(const.HUMAN.ships)
+    Drawer.draw_ship(const.HUMAN.ships)
     computer_turn = False
     flag, game_over = display_the_start_screen(False)
     while not game_over:
         game_over, computer_turn, flag = gameplay(game_over, computer_turn, flag)
-        Drawer.dotted(const.dotted)
+        Drawer.draw_dots(const.dotted)
         Drawer.hit_blocks(const.hit_blocks)
-        Drawer.ship(const.destroyed_ships)
+        Drawer.draw_ship(const.destroyed_ships)
         if not const.COMPUTER.ships_set:
             show_mess(
                 "YOU WIN!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
         if not const.HUMAN.ships_set:
             show_mess(
                 "YOU LOSE!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
-            Drawer.ship(const.COMPUTER.ships)
+            Drawer.draw_ship(const.COMPUTER.ships)
         pygame.display.update()
     pygame.quit()
 
