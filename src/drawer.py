@@ -1,5 +1,5 @@
 from typing import Set, List, Tuple
-import global_variable as my_space
+import const_variable as const
 from dotted_and_hit import dotted_and_hit
 import pygame
 import random
@@ -10,15 +10,15 @@ pygame.init()
 class Drawer:
     def grid(offset: int) -> None:
         for i in range(11):
-            pygame.draw.line(my_space.screen, my_space.BLACK, (
-                my_space.LEFT_MARGIN + offset * my_space.BLOCK_SIZE, my_space.UP_MARGIN + i * my_space.BLOCK_SIZE),
-                             (my_space.LEFT_MARGIN + (my_space.GRID_SIZE + offset) * my_space.BLOCK_SIZE,
-                              my_space.UP_MARGIN + i * my_space.BLOCK_SIZE), 1)
+            pygame.draw.line(const.screen, const.BLACK, (
+                const.LEFT_MARGIN + offset * const.BLOCK_SIZE, const.UP_MARGIN + i * const.BLOCK_SIZE),
+                             (const.LEFT_MARGIN + (const.GRID_SIZE + offset) * const.BLOCK_SIZE,
+                              const.UP_MARGIN + i * const.BLOCK_SIZE), 1)
 
-            pygame.draw.line(my_space.screen, my_space.BLACK,
-                             (my_space.LEFT_MARGIN + (i + offset) * my_space.BLOCK_SIZE, my_space.UP_MARGIN),
-                             (my_space.LEFT_MARGIN + (i + offset) * my_space.BLOCK_SIZE,
-                              my_space.UP_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE), 1)
+            pygame.draw.line(const.screen, const.BLACK,
+                             (const.LEFT_MARGIN + (i + offset) * const.BLOCK_SIZE, const.UP_MARGIN),
+                             (const.LEFT_MARGIN + (i + offset) * const.BLOCK_SIZE,
+                              const.UP_MARGIN + const.GRID_SIZE * const.BLOCK_SIZE), 1)
 
     def ship(ships_coord_list: List[Tuple[int, int]]) -> None:
         """
@@ -30,53 +30,53 @@ class Drawer:
             ship = sorted(cur_coord)
             x_s = ship[0][0]
             y_s = ship[0][1]
-            ship_w = my_space.BLOCK_SIZE * len(ship)
-            ship_h = my_space.BLOCK_SIZE
+            ship_w = const.BLOCK_SIZE * len(ship)
+            ship_h = const.BLOCK_SIZE
             if len(ship) > 1 and ship[0][0] == ship[1][0]:
                 ship_w, ship_h = ship_h, ship_w
-            x = my_space.BLOCK_SIZE * (x_s - 1) + my_space.LEFT_MARGIN
-            y = my_space.BLOCK_SIZE * (y_s - 1) + my_space.UP_MARGIN
-            if ships_coord_list == my_space.human.ships:
-                x += 15 * my_space.BLOCK_SIZE
-            pygame.draw.rect(my_space.screen, my_space.BLACK, ((
-                                                        x, y), (ship_w, ship_h)),
-                             width=my_space.BLOCK_SIZE // my_space.GRID_SIZE)
+            x = const.BLOCK_SIZE * (x_s - 1) + const.LEFT_MARGIN
+            y = const.BLOCK_SIZE * (y_s - 1) + const.UP_MARGIN
+            if ships_coord_list == const.human.ships:
+                x += 15 * const.BLOCK_SIZE
+            pygame.draw.rect(const.screen, const.BLACK, ((
+                                                             x, y), (ship_w, ship_h)),
+                             width=const.BLOCK_SIZE // const.GRID_SIZE)
 
     def dotted(dotted: Set[Tuple[int, int]]) -> None:
         """
         Рисует точки в центре всех блоков в dotted
         """
         for i in dotted:
-            pygame.draw.circle(my_space.screen, my_space.BLACK, (my_space.BLOCK_SIZE * (
-                    i[0] - 0.5) + my_space.LEFT_MARGIN, my_space.BLOCK_SIZE * (i[1] - 0.5) + my_space.UP_MARGIN),
-                               my_space.BLOCK_SIZE // my_space.FIVE)
+            pygame.draw.circle(const.screen, const.BLACK, (const.BLOCK_SIZE * (
+                    i[0] - 0.5) + const.LEFT_MARGIN, const.BLOCK_SIZE * (i[1] - 0.5) + const.UP_MARGIN),
+                               const.BLOCK_SIZE // const.FIVE)
 
-    def destroyed_ships(pos: int, opponent_ships: List[Set[Tuple[int, int]]], comp_turn: bool,
+    def destroyed_ships(pos: int, opponent_ships: List[Set[Tuple[int, int]]], computer_turn: bool,
                         diagonal_only: bool = False) -> None:
         """
         Добавляет блоки до и после корабля в dotted_set, чтобы нарисовать на них точки.
         Добавляет все блоки на корабле в hit_blocks, установленные для рисования крестиков внутри разрушенного корабля.
         """
-        if opponent_ships == my_space.computer_ships:
-            ships_list = my_space.computer.ships
-        elif opponent_ships == my_space.human_ships:
-            ships_list = my_space.human.ships
+        if opponent_ships == const.computer_ships:
+            ships_list = const.computer.ships
+        elif opponent_ships == const.human_ships:
+            ships_list = const.human.ships
         ship = sorted(ships_list[pos])
         for i in range(-1, 1):
-            dotted_and_hit(ship[i], comp_turn, diagonal_only)
+            dotted_and_hit(ship[i], computer_turn, diagonal_only)
 
     def hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
         """
         Рисует "X" в блоках, которые были успешно поражены либо компьютером, либо человеком
         """
         for block in hit_blocks:
-            x1 = my_space.BLOCK_SIZE * (block[0] - 1) + my_space.LEFT_MARGIN
-            y1 = my_space.BLOCK_SIZE * (block[1] - 1) + my_space.UP_MARGIN
-            pygame.draw.line(my_space.screen, my_space.BLACK, (x1, y1), (x1 +
-                                                                         my_space.BLOCK_SIZE, y1 + my_space.BLOCK_SIZE),
-                             my_space.BLOCK_SIZE // my_space.SEVEN)
-            pygame.draw.line(my_space.screen, my_space.BLACK, (x1, y1 + my_space.BLOCK_SIZE),
-                             (x1 + my_space.BLOCK_SIZE, y1), my_space.BLOCK_SIZE // my_space.SEVEN)
+            x1 = const.BLOCK_SIZE * (block[0] - 1) + const.LEFT_MARGIN
+            y1 = const.BLOCK_SIZE * (block[1] - 1) + const.UP_MARGIN
+            pygame.draw.line(const.screen, const.BLACK, (x1, y1), (x1 +
+                                                                   const.BLOCK_SIZE, y1 + const.BLOCK_SIZE),
+                             const.BLOCK_SIZE // const.SEVEN)
+            pygame.draw.line(const.screen, const.BLACK, (x1, y1 + const.BLOCK_SIZE),
+                             (x1 + const.BLOCK_SIZE, y1), const.BLOCK_SIZE // const.SEVEN)
 
 
 class ShipDrawer(Drawer):

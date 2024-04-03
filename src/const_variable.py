@@ -1,3 +1,4 @@
+"""Модуль для константных значений"""
 import pygame
 
 pygame.init()

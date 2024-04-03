@@ -1,5 +1,5 @@
 from typing import Tuple
-import global_variable as my_space
+import const_variable as const
 import pygame
 
 pygame.init()
@@ -14,17 +14,17 @@ class Button:
 
     def __init__(self, x_ofs: int, button1: str):
         self.__tl = button1
-        self.__tl_w, self.__tl_h = my_space.font.size(self.__tl)
-        self.__button_w = self.__tl_w + my_space.BLOCK_SIZE
-        self.__button_h = self.__tl_h + my_space.BLOCK_SIZE
-        self.__x = x_ofs + my_space.BLOCK_SIZE
-        self.__y = my_space.UP_MARGIN + my_space.BUTTON_BLOCK_OFFSET * \
-                   my_space.BLOCK_SIZE + self.__button_h
-        self.draw = self.__x, self.__y - my_space.TEXT_MARGIN, self.__button_w - my_space.BUTTON_MARGIN, self.__button_h
+        self.__tl_w, self.__tl_h = const.font.size(self.__tl)
+        self.__button_w = self.__tl_w + const.BLOCK_SIZE
+        self.__button_h = self.__tl_h + const.BLOCK_SIZE
+        self.__x = x_ofs + const.BLOCK_SIZE
+        self.__y = const.UP_MARGIN + const.BUTTON_BLOCK_OFFSET * \
+                   const.BLOCK_SIZE + self.__button_h
+        self.draw = self.__x, self.__y - const.TEXT_MARGIN, self.__button_w - const.BUTTON_MARGIN, self.__button_h
         self.rect = pygame.Rect(self.draw)
         self.__button_tl = self.__x + self.__button_w // 2 - self.__tl_w // 2 - \
-                           my_space.TEXT_MARGIN, self.__y + self.__button_h // 2 - self.__tl_h // 2 - my_space.TEXT_MARGIN
-        self.__cl = my_space.LIGHT_GRAY
+                           const.TEXT_MARGIN, self.__y + self.__button_h // 2 - self.__tl_h // 2 - const.TEXT_MARGIN
+        self.__cl = const.LIGHT_GRAY
 
     def draw_button(self, cl: Tuple[int, int, int] = None) -> None:
         """
@@ -34,10 +34,10 @@ class Button:
         """
         if not cl:
             cl = self.__cl
-        pygame.draw.rect(my_space.screen, cl, self.draw)
-        text = my_space.font.render(
-            self.__tl, True, my_space.RED)
-        my_space.screen.blit(text, self.__button_tl)
+        pygame.draw.rect(const.screen, cl, self.draw)
+        text = const.font.render(
+            self.__tl, True, const.RED)
+        const.screen.blit(text, self.__button_tl)
 
     def change_color_on_hover(self) -> None:
         """
@@ -45,4 +45,4 @@ class Button:
         """
         coord = pygame.mouse.get_pos()
         if self.rect.collidepoint(coord):
-            self.draw_button(my_space.GREY)
+            self.draw_button(const.GREY)
