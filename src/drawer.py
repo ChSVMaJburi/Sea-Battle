@@ -9,7 +9,7 @@ pygame.init()
 
 class Drawer:
     def grid(offset: int) -> None:
-        for i in range(11):
+        for i in range(my_space.GRID_LIMIT):
             pygame.draw.line(my_space.screen, my_space.BL, (
                 my_space.l_margin + offset * my_space.block_sz, my_space.upp_margin + i * my_space.block_sz),
                              (my_space.l_margin + (my_space.GRID_SIZE + offset) * my_space.block_sz,
@@ -39,7 +39,7 @@ class Drawer:
             if ships_coord_list == my_space.human.ships:
                 x += 15 * my_space.block_sz
             pygame.draw.rect(my_space.screen, my_space.BL, ((
-                                                        x, y), (ship_w, ship_h)),
+                                                                x, y), (ship_w, ship_h)),
                              width=my_space.block_sz // my_space.GRID_SIZE)
 
     def dotted(dotted: Set[Tuple[int, int]]) -> None:
@@ -73,7 +73,7 @@ class Drawer:
             x1 = my_space.block_sz * (block[0] - 1) + my_space.l_margin
             y1 = my_space.block_sz * (block[1] - 1) + my_space.upp_margin
             pygame.draw.line(my_space.screen, my_space.BL, (x1, y1), (x1 +
-                                                              my_space.block_sz, y1 + my_space.block_sz),
+                                                                      my_space.block_sz, y1 + my_space.block_sz),
                              my_space.block_sz // my_space.SEVEN)
             pygame.draw.line(my_space.screen, my_space.BL, (x1, y1 + my_space.block_sz),
                              (x1 + my_space.block_sz, y1), my_space.block_sz // my_space.SEVEN)
@@ -109,7 +109,7 @@ class ShipDrawer(Drawer):
         return self.create_ship(num_blocks, available_blocks)
 
     def add_ship(self, coor: int, str_rev: int, x_y: int, ship_coord: List[Tuple[int, int]]) -> Tuple[int, int]:
-        if (coor <= 1 and str_rev == -1) or (coor >= 10 and str_rev == 1):
+        if (coor <= 1 and str_rev == -1) or (coor >= my_space.GRID_OFFSET and str_rev == 1):
             str_rev *= -1
             return str_rev, ship_coord[0][x_y] + str_rev
         else:
@@ -132,7 +132,7 @@ class ShipDrawer(Drawer):
         for i in ship:
             for j in range(-1, 2):
                 for m in range(-1, 2):
-                    if 0 < (i[0] + j) < 11 and 0 < (i[1] + m) < 11:
+                    if 0 < (i[0] + j) < my_space.GRID_LIMIT and 0 < (i[1] + m) < my_space.GRID_LIMIT:
                         self.available_blocks.discard((i[0] + j, i[1] + m))
 
     def grid(self) -> List[List[Tuple[int, int]]]:
@@ -142,8 +142,8 @@ class ShipDrawer(Drawer):
         Возвращается: список: 2d-список всех кораблей
         """
         ships_coor = []
-        for i in range(1, 5):
-            for _ in range(5 - i):
+        for i in range(1, my_space.MAX_SHIPS + 1):
+            for _ in range(my_space.MAX_SHIPS + 1 - i):
                 ship = self.create_ship(i, self.available_blocks)
                 ships_coor.append(ship)
                 self.add_new_ship(ship)
