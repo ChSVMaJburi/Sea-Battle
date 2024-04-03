@@ -28,10 +28,10 @@ screen = pygame.display.set_mode(SIZE)
 FONT_SIZE = int(BLOCK_SIZE / 1.5)
 font = pygame.font.SysFont('notosans', FONT_SIZE)
 GAME_OVER = pygame.font.SysFont('notosans', 3 * BLOCK_SIZE)
-human = ""
-computer = ""
-human_ships = ""
-computer_ships = ""
+HUMAN = ""
+COMPUTER = ""
+HUMAN_SHIPS = ""
+COMPUTER_SHIPS = ""
 
 DISTANCE = 15
 GRID_SIZE = 10

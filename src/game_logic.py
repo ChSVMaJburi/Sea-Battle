@@ -12,7 +12,7 @@ def shot(set_to_shot):
     pygame.time.delay(const.MAX_DELAY_FOR_COMPUTER_SHOT)
     comp_fired = random.choice(tuple(set_to_shot))
     const.available_to_fire_set.discard(comp_fired)
-    return hit_or_miss(comp_fired, const.human_ships, True)
+    return hit_or_miss(comp_fired, const.HUMAN_SHIPS, True)
 
 
 def update_around_comp_hit(shot_coordinates, computer_hits=True):
@@ -89,10 +89,10 @@ def hit_or_miss(shot_coordinates, opponent_ships, computer_turn):
             i.remove(shot_coordinates)
             if computer_turn:
                 const.last_hits.append(shot_coordinates)
-                const.human.ships_set.discard(shot_coordinates)
+                const.HUMAN.ships_set.discard(shot_coordinates)
                 update_around_comp_hit(shot_coordinates)
             else:
-                const.computer.ships_set.discard(shot_coordinates)
+                const.COMPUTER.ships_set.discard(shot_coordinates)
             if not i:
                 Drawer.destroyed_ships(pos, opponent_ships, computer_turn)
                 if computer_turn:
@@ -100,7 +100,7 @@ def hit_or_miss(shot_coordinates, opponent_ships, computer_turn):
                     const.around_hit_set.clear()
                 else:
                     const.destroyed_ships.append(
-                        const.computer.ships[pos])
+                        const.COMPUTER.ships[pos])
             return True
     if not computer_turn:
         const.dotted.add(shot_coordinates)

@@ -36,7 +36,7 @@ class Drawer:
                 ship_w, ship_h = ship_h, ship_w
             x = const.BLOCK_SIZE * (x_s - 1) + const.LEFT_MARGIN
             y = const.BLOCK_SIZE * (y_s - 1) + const.UP_MARGIN
-            if ships_coord_list == const.human.ships:
+            if ships_coord_list == const.HUMAN.ships:
                 x += 15 * const.BLOCK_SIZE
             pygame.draw.rect(const.screen, const.BLACK, ((
                                                              x, y), (ship_w, ship_h)),
@@ -57,10 +57,10 @@ class Drawer:
         Добавляет блоки до и после корабля в dotted_set, чтобы нарисовать на них точки.
         Добавляет все блоки на корабле в hit_blocks, установленные для рисования крестиков внутри разрушенного корабля.
         """
-        if opponent_ships == const.computer_ships:
-            ships_list = const.computer.ships
-        elif opponent_ships == const.human_ships:
-            ships_list = const.human.ships
+        if opponent_ships == const.COMPUTER_SHIPS:
+            ships_list = const.COMPUTER.ships
+        elif opponent_ships == const.HUMAN_SHIPS:
+            ships_list = const.HUMAN.ships
         ship = sorted(ships_list[pos])
         for i in range(-1, 1):
             dotted_and_hit(ship[i], computer_turn, diagonal_only)

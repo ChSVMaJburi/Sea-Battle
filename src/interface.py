@@ -56,7 +56,7 @@ def gameplay(game_over: bool, computer_turn: bool, flag: bool):
                             flag = True
                 if flag == False:
                     computer_turn = not logic.hit_or_miss(
-                        shot_coordinates, const.computer_ships, computer_turn)
+                        shot_coordinates, const.COMPUTER_SHIPS, computer_turn)
 
     if computer_turn:
         if const.around_hit_set:
@@ -68,10 +68,10 @@ def gameplay(game_over: bool, computer_turn: bool, flag: bool):
 
 def init_pygame():
     """Проделаем стартовые операции pygame"""
-    const.human = ShipDrawer()
-    const.human_ships = copy.deepcopy(const.human.ships)
-    const.computer = ShipDrawer()
-    const.computer_ships = copy.deepcopy(const.computer.ships)
+    const.HUMAN = ShipDrawer()
+    const.HUMAN_SHIPS = copy.deepcopy(const.HUMAN.ships)
+    const.COMPUTER = ShipDrawer()
+    const.COMPUTER_SHIPS = copy.deepcopy(const.COMPUTER.ships)
     const.screen.fill(const.BLUE)
 
 
@@ -79,7 +79,7 @@ def play():
     init_pygame()
     Grid("COMPUTER", 0)
     Grid("HUMAN", const.DISTANCE)
-    Drawer.ship(const.human.ships)
+    Drawer.ship(const.HUMAN.ships)
     computer_turn = False
     flag, game_over = display_the_start_screen(False)
     while not game_over:
@@ -87,13 +87,13 @@ def play():
         Drawer.dotted(const.dotted)
         Drawer.hit_blocks(const.hit_blocks)
         Drawer.ship(const.destroyed_ships)
-        if not const.computer.ships_set:
+        if not const.COMPUTER.ships_set:
             show_mess(
                 "YOU WIN!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
-        if not const.human.ships_set:
+        if not const.HUMAN.ships_set:
             show_mess(
                 "YOU LOSE!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
-            Drawer.ship(const.computer.ships)
+            Drawer.ship(const.COMPUTER.ships)
         pygame.display.update()
     pygame.quit()
 
