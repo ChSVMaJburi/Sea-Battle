@@ -3,7 +3,7 @@ from typing import Set, List, Tuple
 import random
 import pygame
 import const_variables as const
-from dotted_and_hit import dotted_and_hit
+from dotted_and_hit import update_dotted_and_hit
 
 
 def draw_grid(offset: int) -> None:
@@ -69,7 +69,7 @@ class Drawer:
             ships_list = const.COMPUTER.ships
         ship = sorted(ships_list[pos])
         for ind in range(-1, 1):
-            dotted_and_hit(ship[ind], computer_turn, diagonal_only)
+            update_dotted_and_hit(ship[ind], computer_turn, diagonal_only)
 
     def hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
         """

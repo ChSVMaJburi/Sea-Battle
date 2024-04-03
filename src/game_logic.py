@@ -1,7 +1,7 @@
 """Основная логика игры, добавил некоторые комментарии, для лучшей читабельности"""
 import random
 import pygame
-from dotted_and_hit import dotted_and_hit
+from dotted_and_hit import update_dotted_and_hit
 import const_variables as const
 from drawer import Drawer
 
@@ -110,10 +110,10 @@ def hit_or_miss(shot_coordinates: tuple[int, int], opponent_ships: list,
     """
     for ship in opponent_ships:
         if shot_coordinates in ship:
-            dotted_and_hit(shot_coordinates, computer_turn)
+            update_dotted_and_hit(shot_coordinates, computer_turn)
             position = opponent_ships.index(ship)
             if len(ship) == 1:
-                dotted_and_hit(shot_coordinates, computer_turn)
+                update_dotted_and_hit(shot_coordinates, computer_turn)
             ship.remove(shot_coordinates)
             if computer_turn:
                 const.last_hits.append(shot_coordinates)
