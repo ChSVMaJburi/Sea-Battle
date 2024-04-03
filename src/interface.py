@@ -1,31 +1,32 @@
+import copy
+import pygame
 from button import Button
 import const_variables as const
-from drawer import Drawer
 from grid_class import Grid
-import copy
-from drawer import ShipDrawer
+from drawer import Drawer, ShipDrawer
 
-import pygame
 import game_logic as logic
 
 pygame.init()
 
-st_game = const.LEFT_MARGIN + const.GRID_SIZE * const.BLOCK_SIZE
-st_button = Button(st_game, "START GAME")
+start_game_x_position = const.LEFT_MARGIN + const.GRID_SIZE * const.BLOCK_SIZE
+start_button = Button(start_game_x_position, "START GAME")
 
 
-def display_the_start_screen(game_over):
+def display_the_start_screen(game_over: bool) -> tuple[bool, bool]:
+    """"Создает кнопку "START GAME", рисует ее на экране и обрабатывает события мыши"""
     flag = True
     while flag:
-        st_button.draw_button()
-        st_button.change_color_on_hover()
+        start_button.draw_button()
+        start_button.change_color_on_hover()
         pygame.display.update()
-        m = pygame.mouse.get_pos()
+        mouse_position = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 flag = False
                 game_over = True
-            elif event.type == pygame.MOUSEBUTTONDOWN and st_button.rect.collidepoint(m):
+            elif (event.type == pygame.MOUSEBUTTONDOWN and
+                  start_button.rect.collidepoint(mouse_position)):
                 flag = False
         pygame.display.update()
         const.screen.fill(const.BLUE,
@@ -34,31 +35,41 @@ def display_the_start_screen(game_over):
     return flag, game_over
 
 
-def gameplay(game_over: bool, computer_turn: bool, flag: bool):
-    for i in pygame.event.get():
-        if i.type == pygame.QUIT:
-            game_over = True
-        elif not computer_turn and i.type == pygame.MOUSEBUTTONDOWN:
-            x, y = i.pos
-            if const.MIN_X <= x <= const.MAX_X and const.MIN_Y <= y <= const.MAX_Y:
-                if (
-                        const.LEFT_MARGIN < x < const.LEFT_MARGIN + const.GRID_OFFSET * const.BLOCK_SIZE) and (
-                        const.UP_MARGIN < y < const.UP_MARGIN + const.GRID_OFFSET * const.BLOCK_SIZE):
-                    flag = False
-                    shot_coordinates = ((x - const.LEFT_MARGIN) // const.BLOCK_SIZE + 1,
-                                        (y - const.UP_MARGIN) // const.BLOCK_SIZE + 1)
-                    for i in const.hit_blocks:
-                        if i == shot_coordinates:
-                            flag = True
+def handle_mouse_event(event):
+    """Обрабатывает события мыши для хода игрока."""
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        x_coordinate, y_coordinate = event.pos
+        if (const.MIN_X <= x_coordinate <= const.MAX_X and
+                const.MIN_Y <= y_coordinate <= const.MAX_Y):
+            if ((const.LEFT_MARGIN < x_coordinate < const.LEFT_MARGIN +
+                 const.GRID_OFFSET * const.BLOCK_SIZE) and
+                    (const.UP_MARGIN < y_coordinate < const.UP_MARGIN +
+                     const.GRID_OFFSET * const.BLOCK_SIZE)):
+                return ((x_coordinate - const.LEFT_MARGIN) // const.BLOCK_SIZE + 1,
+                        (y_coordinate - const.UP_MARGIN) // const.BLOCK_SIZE + 1)
+    return None
 
-                    for i in const.dotted:
-                        if i == shot_coordinates:
-                            flag = True
-                if flag == False:
+
+def gameplay(game_over: bool, computer_turn: bool, flag: bool) -> tuple[bool, bool, bool]:
+    """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
+       В зависимости от событий, она обновляет состояние игры"""
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return True, computer_turn, flag  # Game over
+        if not computer_turn:
+            shot_coordinates = handle_mouse_event(event)
+            if shot_coordinates is not None:
+                flag = False
+                for hit_block in const.hit_blocks:
+                    if hit_block == shot_coordinates:
+                        flag = True
+                for dot in const.dotted:
+                    if dot == shot_coordinates:
+                        flag = True
+                if not flag:
                     computer_turn = not logic.hit_or_miss(
                         shot_coordinates, const.COMPUTER_SHIPS, computer_turn)
-
-    if computer_turn:
+    if not game_over and computer_turn:
         if const.around_hit_set:
             computer_turn = logic.shot(const.around_hit_set)
         else:
@@ -66,7 +77,7 @@ def gameplay(game_over: bool, computer_turn: bool, flag: bool):
     return game_over, computer_turn, flag
 
 
-def init_pygame():
+def init_pygame() -> None:
     """Проделаем стартовые операции pygame"""
     const.HUMAN = ShipDrawer()
     const.HUMAN_SHIPS = copy.deepcopy(const.HUMAN.ships)
@@ -75,7 +86,8 @@ def init_pygame():
     const.screen.fill(const.BLUE)
 
 
-def play():
+def play() -> None:
+    """Запускает игровой цикл"""
     init_pygame()
     Grid("COMPUTER", 0)
     Grid("HUMAN", const.DISTANCE)
@@ -88,30 +100,26 @@ def play():
         Drawer.hit_blocks(const.hit_blocks)
         Drawer.draw_ship(const.destroyed_ships)
         if not const.COMPUTER.ships_set:
-            show_mess(
+            show_message(
                 "YOU WIN!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
         if not const.HUMAN.ships_set:
-            show_mess(
+            show_message(
                 "YOU LOSE!", (0, 0, const.SIZE[0], const.SIZE[1]), const.GAME_OVER)
             Drawer.draw_ship(const.COMPUTER.ships)
         pygame.display.update()
     pygame.quit()
 
 
-def show_mess(mess: str, rectangle: tuple, w_f=const.font):
+def show_message(message: str, rectangle: tuple, font=const.font) -> None:
     """
     Выводит сообщение на экран в центре заданного прямоугольника.
-    Аргументы:
-        mess (str): Сообщение для печати
-        r (tuple): прямоугольник в формате
-        w_f (объект шрифта pygame): Какой шрифт использовать для печати сообщения. По умолчанию используется шрифт.
     """
-    mess_w, mess_h = w_f.size(mess)
-    mess_r = pygame.Rect(rectangle)
-    x = mess_r.centerx - mess_w / 2
-    y = mess_r.centery - mess_h / 2
-    backgr_r = pygame.Rect(x - const.BLOCK_SIZE / 2,
-                           y, mess_w + const.BLOCK_SIZE, mess_h)
-    mess_blit = w_f.render(mess, True, const.RED)
-    const.screen.fill(const.BLUE, backgr_r)
-    const.screen.blit(mess_blit, (x, y))
+    message_width, message_height = font.size(message)
+    message_rectangle = pygame.Rect(rectangle)
+    x_coordinate = message_rectangle.centerx - message_width / 2
+    y_coordinate = message_rectangle.centery - message_height / 2
+    background_rect = pygame.Rect(x_coordinate - const.BLOCK_SIZE / 2,
+                                  y_coordinate, message_width + const.BLOCK_SIZE, message_height)
+    message_rendered = font.render(message, True, const.RED)
+    const.screen.fill(const.BLUE, background_rect)
+    const.screen.blit(message_rendered, (x_coordinate, y_coordinate))
