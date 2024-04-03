@@ -1,5 +1,5 @@
 from typing import Tuple
-import const_variable as const
+import const_variables as const
 
 
 def dotted_and_hit(shot_coordinates: Tuple[int, int], computer_turn: bool, diagonal_only: bool = True) -> None:

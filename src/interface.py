@@ -1,5 +1,5 @@
 from button import Button
-import const_variable as const
+import const_variables as const
 from drawer import Drawer
 from grid_class import Grid
 import copy

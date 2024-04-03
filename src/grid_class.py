@@ -1,5 +1,5 @@
 """Реализован класс Grid наследуемый от Drawer. Цель нарисовать начальную сетку"""
-import const_variable as const
+import const_variables as const
 from drawer import Drawer
 
 

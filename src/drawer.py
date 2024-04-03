@@ -1,5 +1,5 @@
 from typing import Set, List, Tuple
-import const_variable as const
+import const_variables as const
 from dotted_and_hit import dotted_and_hit
 import pygame
 import random

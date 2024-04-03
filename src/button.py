@@ -1,5 +1,5 @@
 from typing import Tuple
-import const_variable as const
+import const_variables as const
 import pygame
 
 pygame.init()
