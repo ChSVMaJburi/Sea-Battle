@@ -2,11 +2,8 @@ import copy
 import pygame
 from button import Button
 import global_variables as my_space
-from grid_class import Grid
-from drawer import Drawer, ShipDrawer
-
-import shooting_process as shooting
-
+from drawer import Drawer
+from players import ComputerPlayer, HumanPlayer
 pygame.init()
 
 start_game_x_position = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
@@ -34,56 +31,10 @@ def display_the_start_screen(game_over: bool) -> tuple[bool, bool]:
                               my_space.RECTANGLE_HEIGHT))
     return shot_taken, game_over
 
-
-def handle_mouse_event(event):
-    """Обрабатывает события мыши для хода игрока."""
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        x_coordinate, y_coordinate = event.pos
-        if (my_space.MIN_X <= x_coordinate <= my_space.MAX_X and
-                my_space.MIN_Y <= y_coordinate <= my_space.MAX_Y):
-            if ((my_space.LEFT_MARGIN < x_coordinate < my_space.LEFT_MARGIN +
-                 my_space.GRID_OFFSET * my_space.BLOCK_SIZE) and
-                    (my_space.UP_MARGIN < y_coordinate < my_space.UP_MARGIN +
-                     my_space.GRID_OFFSET * my_space.BLOCK_SIZE)):
-                return ((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
-                        (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
-    return None
-
-
-def shoot(game_over: bool, computer_turn: bool, shot_taken: bool) -> tuple[bool, bool, bool]:
-    """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
-       В зависимости от событий, она обновляет состояние игры"""
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            return True, computer_turn, shot_taken
-        if not computer_turn:
-            shot_coordinates = handle_mouse_event(event)
-            if shot_coordinates is not None:
-                shot_taken = False
-                for hit_block in my_space.hit_blocks:
-                    if hit_block == shot_coordinates:
-                        shot_taken = True
-                for dot in my_space.dotted:
-                    if dot == shot_coordinates:
-                        shot_taken = True
-                if not shot_taken:
-                    computer_turn = not shooting.check_is_successful_hit(
-                        shot_coordinates, my_space.COMPUTER_SHIPS, computer_turn)
-    if not game_over and computer_turn:
-        if my_space.around_hit_set:
-            computer_turn = shooting.random_shot(my_space.around_hit_set)
-        else:
-            computer_turn = shooting.random_shot(my_space.available_to_fire_set)
-    return game_over, computer_turn, shot_taken
-
 def play() -> None:
     """Запускает игровой цикл"""
-    my_space.HUMAN = ShipDrawer()
-    my_space.HUMAN_SHIPS = copy.deepcopy(my_space.HUMAN.ships)
-    my_space.COMPUTER = ShipDrawer()
-    my_space.COMPUTER_SHIPS = copy.deepcopy(my_space.COMPUTER.ships)
-    Grid("COMPUTER", 0)
-    Grid("HUMAN", my_space.DISTANCE)
+    human = HumanPlayer("HUMAN", 0)
+    computer = ComputerPlayer("COMPUTER", my_space.MAX_X_OFFSET)
     Drawer.draw_ship(my_space.HUMAN.ships)
     computer_turn = False
     shot_taken, game_over = display_the_start_screen(False)

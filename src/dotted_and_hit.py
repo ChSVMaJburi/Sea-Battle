@@ -12,7 +12,7 @@ def update_dotted_and_hit(shot_coordinates: Tuple[int, int], computer_turn: bool
         fire_x_coordinate += my_space.MAX_X_OFFSET
         min_x += my_space.MAX_X_OFFSET
         max_x += my_space.MAX_X_OFFSET
-        my_space.for_comp_to_shot.add(shot_coordinates)
+        my_space.nado_ubrat_for_comp_to_shot.add(shot_coordinates)
     my_space.hit_blocks.add((fire_x_coordinate, fire_y_coordinate))
     for add_x_coordinate in range(-1, 2):
         for add_y_coordinate in range(-1, 2):

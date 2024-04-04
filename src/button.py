@@ -22,7 +22,7 @@ class Button:
     """
 
     def __init__(self, x_offset: int, text: str):
-        if not my_space.is_pygame_init:
+        if not my_space.IS_PYGAME_INIT:
             init_pygame()
         self.text = text
         self.text_width, self.text_height = my_space.font.size(self.text)

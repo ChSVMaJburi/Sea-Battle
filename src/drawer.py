@@ -6,23 +6,6 @@ import global_variables as my_space
 from dotted_and_hit import update_dotted_and_hit
 
 
-def draw_grid(offset: int) -> None:
-    """Рисует сетку"""
-    for digit in range(my_space.GRID_LIMIT):
-        pygame.draw.line(my_space.screen, my_space.BLACK, (
-            my_space.LEFT_MARGIN + offset * my_space.BLOCK_SIZE,
-            my_space.UP_MARGIN + digit * my_space.BLOCK_SIZE),
-                         (
-                         my_space.LEFT_MARGIN + (my_space.GRID_SIZE + offset) * my_space.BLOCK_SIZE,
-                         my_space.UP_MARGIN + digit * my_space.BLOCK_SIZE), 1)
-
-        pygame.draw.line(my_space.screen, my_space.BLACK,
-                         (my_space.LEFT_MARGIN +
-                          (digit + offset) * my_space.BLOCK_SIZE, my_space.UP_MARGIN),
-                         (my_space.LEFT_MARGIN + (digit + offset) * my_space.BLOCK_SIZE,
-                          my_space.UP_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE), 1)
-
-
 class Drawer:
     """Рисовальщик, рисует на поле нужные знаки, фигуры"""
 
@@ -48,27 +31,14 @@ class Drawer:
                              ((x_coord, y_coord), (ship_width, ship_height)),
                              width=my_space.BLOCK_SIZE // my_space.GRID_SIZE)
 
-    def draw_dots(dots: Set[Tuple[int, int]]) -> None:
+    def draw_dot(self, dot: Tuple[int, int]) -> None:
         """
-        Рисует точки в центре всех блоков в dots
+        Рисует точку в dot
         """
-        for dot in dots:
-            pygame.draw.circle(my_space.screen, my_space.BLACK, (
-                my_space.BLOCK_SIZE * (dot[0] - 0.5) + my_space.LEFT_MARGIN,
-                my_space.BLOCK_SIZE * (dot[1] - 0.5) + my_space.UP_MARGIN),
-                               my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
-
-    def process_destroyed_ship(pos: int, opponent_ships: List[Set[Tuple[int, int]]],
-                               computer_turn: bool, diagonal_only: bool = False) -> None:
-        """
-        Обрабатывает процесс уничтожения корабля
-        """
-        ships_list = my_space.HUMAN.ships
-        if opponent_ships == my_space.COMPUTER_SHIPS:
-            ships_list = my_space.COMPUTER.ships
-        ship = sorted(ships_list[pos])
-        for ind in range(-1, 1):
-            update_dotted_and_hit(ship[ind], computer_turn, diagonal_only)
+        pygame.draw.circle(my_space.screen, my_space.BLACK,
+                           (my_space.BLOCK_SIZE * (dot[0] - 0.5) + my_space.LEFT_MARGIN,
+                            my_space.BLOCK_SIZE * (dot[1] - 0.5) + my_space.UP_MARGIN),
+                           my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
 
     def draw_hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
         """
