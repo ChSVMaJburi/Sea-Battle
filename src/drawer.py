@@ -1,15 +1,16 @@
 """Реализация классов Drawer, ShipDrawer"""
+import copy
 from typing import Set, List, Tuple
 import random
 import pygame
 import global_variables as my_space
-from dotted_and_hit import update_dotted_and_hit
 
 
 class Drawer:
     """Рисовальщик, рисует на поле нужные знаки, фигуры"""
 
-    def draw_ship(ships_coord_list: List[Tuple[Tuple[int, int], Tuple[int, int]]]) -> None:
+    def draw_ship(ships_coord_list: List[Tuple[Tuple[int, int], Tuple[int, int]]],
+                  offset: int) -> None:
         """
          Рисует прямоугольники вокруг блоков, занятых кораблем
          Аргументы:
@@ -25,20 +26,20 @@ class Drawer:
                 ship_width, ship_height = ship_height, ship_width
             x_coord = my_space.BLOCK_SIZE * (x_index - 1) + my_space.LEFT_MARGIN
             y_coord = my_space.BLOCK_SIZE * (y_index - 1) + my_space.UP_MARGIN
-            if ships_coord_list == my_space.HUMAN.ships:
-                x_coord += my_space.DISTANCE * my_space.BLOCK_SIZE
+            x_coord += offset * my_space.BLOCK_SIZE
             pygame.draw.rect(my_space.screen, my_space.BLACK,
                              ((x_coord, y_coord), (ship_width, ship_height)),
                              width=my_space.BLOCK_SIZE // my_space.GRID_SIZE)
 
-    def draw_dot(self, dot: Tuple[int, int]) -> None:
+    def draw_dots(dots: Set[Tuple[int, int]]) -> None:
         """
-        Рисует точку в dot
+        Рисует точки в центре всех блоков в dots
         """
-        pygame.draw.circle(my_space.screen, my_space.BLACK,
-                           (my_space.BLOCK_SIZE * (dot[0] - 0.5) + my_space.LEFT_MARGIN,
-                            my_space.BLOCK_SIZE * (dot[1] - 0.5) + my_space.UP_MARGIN),
-                           my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
+        for dot in dots:
+            pygame.draw.circle(my_space.screen, my_space.BLACK, (
+                my_space.BLOCK_SIZE * (dot[0] - 0.5) + my_space.LEFT_MARGIN,
+                my_space.BLOCK_SIZE * (dot[1] - 0.5) + my_space.UP_MARGIN),
+                               my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
 
     def draw_hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
         """
@@ -83,6 +84,7 @@ class ShipDrawer(Drawer):
             range(1, my_space.GRID_LIMIT))
         self.ships_set = set()
         self.ships = self.generate_ships_grid()
+        self.ships_copy = copy.deepcopy(self.ships)
 
     def create_ship(self, num_blocks: int, available_blocks: Set[Tuple[int, int]]) \
             -> List[Tuple[int, int]]:

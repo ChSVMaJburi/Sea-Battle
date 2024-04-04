@@ -35,9 +35,10 @@ class Button:
         self.draw = (self.x_coordinate, self.y_coordinate - my_space.TEXT_MARGIN,
                      self.button_width - my_space.BUTTON_MARGIN, self.button_height)
         self.rect = pygame.Rect(self.draw)
-        self.text_position = (
-            self.x_coordinate + self.button_width // 2 - self.text_width // 2 - my_space.TEXT_MARGIN,
-            self.y_coordinate + self.button_height // 2 - self.text_height // 2 - my_space.TEXT_MARGIN)
+        self.text_position = (self.x_coordinate + self.button_width // 2 - self.text_width // 2 -
+                              my_space.TEXT_MARGIN,
+                              self.y_coordinate + self.button_height // 2 - self.text_height // 2 -
+                              my_space.TEXT_MARGIN)
         self.default_color = my_space.LIGHT_GRAY
 
     def draw_button(self, color: Tuple[int, int, int] = None) -> None:

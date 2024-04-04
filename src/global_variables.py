@@ -17,10 +17,7 @@ screen = None
 FONT_SIZE = None
 font = None
 GAME_OVER = None
-HUMAN = None
-COMPUTER = None
-HUMAN_SHIPS = None
-COMPUTER_SHIPS = None
+
 
 DISTANCE = 15
 GRID_SIZE = 10

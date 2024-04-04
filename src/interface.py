@@ -1,13 +1,14 @@
-import copy
 import pygame
 from button import Button
 import global_variables as my_space
 from drawer import Drawer
-from players import ComputerPlayer, HumanPlayer
+from players import HumanPlayer
+from computer import ComputerPlayer
+
 pygame.init()
 
-start_game_x_position = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
-start_button = Button(start_game_x_position, "START GAME")
+START_GAME_X_POSITION = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
+start_button = Button(START_GAME_X_POSITION, "START GAME")
 
 
 def display_the_start_screen(game_over: bool) -> tuple[bool, bool]:
@@ -31,25 +32,31 @@ def display_the_start_screen(game_over: bool) -> tuple[bool, bool]:
                               my_space.RECTANGLE_HEIGHT))
     return shot_taken, game_over
 
+
 def play() -> None:
     """Запускает игровой цикл"""
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.MAX_X_OFFSET)
-    Drawer.draw_ship(my_space.HUMAN.ships)
-    computer_turn = False
+    Drawer.draw_ship(human.drawer.ships, computer.offset)
+    Drawer.draw_ship(computer.drawer.ships, human.offset)
+    turn_two = False
     shot_taken, game_over = display_the_start_screen(False)
     while not game_over:
-        game_over, computer_turn, shot_taken = shoot(game_over, computer_turn, shot_taken)
-        Drawer.draw_dots(my_space.dotted)
-        Drawer.draw_hit_blocks(my_space.hit_blocks)
-        Drawer.draw_ship(my_space.destroyed_ships)
-        if not my_space.COMPUTER.ships_set:
+        if turn_two:
+            game_over, turn_two, shot_taken = computer.shoot(human, game_over, shot_taken)
+        else:
+            game_over, turn_two, shot_taken = human.shoot(computer, game_over, shot_taken)
+
+        Drawer.draw_dots(human.dotted | computer.dotted)
+        Drawer.draw_hit_blocks(human.hit_blocks | computer.hit_blocks)
+        # Drawer.draw_ship(human.destroyed_ships, human.offset)
+        if not computer.drawer.ships_set:
             show_message(
                 "YOU WIN!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]), my_space.GAME_OVER)
-        if not my_space.HUMAN.ships_set:
+        if not human.drawer.ships_set:
             show_message(
                 "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]), my_space.GAME_OVER)
-            Drawer.draw_ship(my_space.COMPUTER.ships)
+            Drawer.draw_ship(computer.drawer.ships, human.offset)
         pygame.display.update()
     pygame.quit()
 
