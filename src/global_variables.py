@@ -1,7 +1,5 @@
-"""Модуль для константных значений"""
-import pygame
+"""Модуль для глобальных значений"""
 
-pygame.init()
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 180, 180)
@@ -23,11 +21,10 @@ last_hits = []
 destroyed_ships = []
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
-pygame.display.set_caption("Sea Battle")
-screen = pygame.display.set_mode(SIZE)
-FONT_SIZE = int(BLOCK_SIZE / 1.5)
-font = pygame.font.SysFont('notosans', FONT_SIZE)
-GAME_OVER = pygame.font.SysFont('notosans', 3 * BLOCK_SIZE)
+screen = None
+FONT_SIZE = None
+font = None
+GAME_OVER = None
 HUMAN = None
 COMPUTER = None
 HUMAN_SHIPS = None
@@ -55,3 +52,4 @@ TEXT_MARGIN = 20
 GRID_LIMIT = 11
 SHIPS_LIMIT = 5
 SEVEN = 7
+is_pygame_init = False
