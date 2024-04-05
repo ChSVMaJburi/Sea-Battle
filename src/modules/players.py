@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pygame
 import src.global_variables as my_space
-from src.GUI.grid_class import Grid
-from src.GUI.drawer import Point
+from src.GUI.gui_drawer import Point
 from src.modules.ship_manager import ShipManager
 
 
@@ -14,14 +13,9 @@ class Player(ABC):
     def __init__(self, name: str, offset: int):
         self.name = name
         self.offset = offset
-        self.create_board()
         self.drawer = ShipManager()
         self.hit_blocks = set[Point]()
         self.dotted = set[Point]()
-
-    def create_board(self):
-        """Начинает процесс рисования доски"""
-        Grid(self.name, self.offset)
 
     @abstractmethod
     def update_dotted_and_hit(self, shot_coordinates: Point,

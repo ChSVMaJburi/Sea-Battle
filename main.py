@@ -1,5 +1,15 @@
 """Основной файл"""
-from src.GUI.gui_interface import play
+from src.GUI.gui_interface import play_gui_type
+from src.console.console_interface import play_console_type
+from src.console.support_functions import ask_question
+import sys
+sys.stdin = open(sys.stdin.fileno(), mode='r', encoding='utf-8', buffering=True)
+
 
 if __name__ == "__main__":
-    play()
+    print("\nПривет!\n")
+    # if ask_question("Желаете воспользоваться графическим интерфейсом?"):
+    #     play_gui_type()
+    # else:
+    #     play_console_type()
+    play_console_type()

@@ -5,7 +5,7 @@ from typing import Set
 import pygame
 from src.modules.players import Player
 import src.global_variables as my_space
-from src.GUI.drawer import Point
+from src.GUI.gui_drawer import Point
 
 
 class ComputerPlayer(Player):

@@ -1,7 +1,7 @@
 """Реализован класс Grid наследуемый от Drawer. Цель нарисовать начальную сетку"""
 import pygame
 import src.global_variables as my_space
-from src.GUI.drawer import Drawer
+from src.GUI.gui_drawer import Drawer
 
 
 class Grid(Drawer):
