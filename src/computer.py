@@ -1,5 +1,7 @@
 """В этом модуле реализуется ComputerPlayer и вспомогательные для неё функции и процедуры"""
 import random
+from typing import Set
+
 import pygame
 from players import Player
 import global_variables as my_space
@@ -49,17 +51,17 @@ class ComputerPlayer(Player):
         # print(len(self.available_to_fire_set))
         return game_over, is_hit, True
 
-    def __random_shoot(self, set_to_shot: set, other_player: Player) -> bool:
+    def __random_shoot(self, set_to_shot: Set[Point], other_player: Player) -> bool:
         """
         Случайным образом выбирает блок из доступных для стрельбы из набора и возвращает hit_or_miss
         """
-        pygame.time.delay(my_space.MAX_DELAY_FOR_COMPUTER_SHOT)
-        computer_fired = random.choice(tuple(set_to_shot))
+        pygame.time.delay(my_space.DELAY_FOR_COMPUTER_SHOT)
+        computer_fired = random.choice(list(set_to_shot))
+        computer_fired = Point(computer_fired[0], computer_fired[1])
         self.available_to_fire_set.discard(computer_fired)
         return self.__check_is_successful_hit(computer_fired, other_player)
 
-    def __check_is_successful_hit(self, shot_coordinates: Point,
-                                  other_player: Player) -> bool:
+    def __check_is_successful_hit(self, shot_coordinates: Point, other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
         for ship in other_player.drawer.ships_copy:

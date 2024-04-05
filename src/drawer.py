@@ -25,19 +25,16 @@ class Point:
         return f"{self.coordinate[0]} {self.coordinate[1]}"
 
     def __eq__(self, other: 'Point') -> bool:
-        if not isinstance(other, Point):
-            return False
-        return (self.coordinate[0] == other.coordinate[0] and
-                self.coordinate[1] == other.coordinate[1])
+        return self.coordinate == other.coordinate
 
     def __ne__(self, other: 'Point') -> bool:
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
-        return hash((self.coordinate[0], self.coordinate[1]))
+        return hash((self.coordinate, self.coordinate))
 
     def __is__(self, other: 'Point') -> bool:
-        return self is other
+        return self == other
 
 
 class Drawer:
