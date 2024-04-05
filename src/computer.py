@@ -1,9 +1,9 @@
 """В этом модуле реализуется ComputerPlayer и вспомогательные для неё функции и процедуры"""
-from typing import Tuple
 import random
 import pygame
 from players import Player
 import global_variables as my_space
+from drawer import Point
 
 
 class ComputerPlayer(Player):
@@ -11,15 +11,15 @@ class ComputerPlayer(Player):
 
     def __init__(self, name: str, offset: int):
         super().__init__(name, offset)
-        self.need_to_fire = set[Tuple[int, int]]()
-        self.to_shot = set[Tuple[int, int]]()
-        self.last_hits = list[Tuple[int, int]]()
-        self.dotted_to_shot = set[Tuple[int, int]]()
-        self.available_to_fire_set = set[Tuple[int, int]](
+        self.need_to_fire = set[Point]()
+        self.to_shot = set[Point]()
+        self.last_hits = list[Point]()
+        self.dotted_to_shot = set[Point]()
+        self.available_to_fire_set = set[Point](
             (a, b) for a in range(1, my_space.GRID_LIMIT) for b in range(1, my_space.GRID_LIMIT))
         # print(sorted(self.available_to_fire_set), sep="\n")
 
-    def update_dotted_and_hit(self, shot_coordinates: Tuple[int, int],
+    def update_dotted_and_hit(self, shot_coordinates: Point,
                               diagonal_only: bool) -> None:
         """Эта процедура добавляет точки вокруг клетки, в которую был произведен выстрел"""
         fire_x_coordinate, fire_y_coordinate = shot_coordinates
@@ -33,8 +33,8 @@ class ComputerPlayer(Player):
                         0 < fire_y_coordinate + add_y_coordinate < my_space.GRID_LIMIT):
                     self.dotted.add((fire_x_coordinate + add_x_coordinate,
                                      fire_y_coordinate + add_y_coordinate))
-                    self.dotted_to_shot.add((shot_coordinates[0] + add_x_coordinate,
-                                             fire_y_coordinate + add_y_coordinate))
+                    self.dotted_to_shot.add(Point(shot_coordinates[0] + add_x_coordinate,
+                                                  fire_y_coordinate + add_y_coordinate))
         self.dotted -= self.hit_blocks
 
     def shoot(self, other_player: Player, game_over: bool, shot_taken: bool) \
@@ -58,7 +58,7 @@ class ComputerPlayer(Player):
         self.available_to_fire_set.discard(computer_fired)
         return self.__check_is_successful_hit(computer_fired, other_player)
 
-    def __check_is_successful_hit(self, shot_coordinates: Tuple[int, int],
+    def __check_is_successful_hit(self, shot_coordinates: Point,
                                   other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
@@ -84,7 +84,7 @@ class ComputerPlayer(Player):
         return False
 
 
-def update_around_comp_hit(shot_coordinates: Tuple[int, int], computer_hits: bool,
+def update_around_comp_hit(shot_coordinates: Point, computer_hits: bool,
                            computer: ComputerPlayer) -> None:
     """
     Обновляет набор блоков вокруг последнего поражения компьютера, удаляя блоки,
@@ -99,7 +99,7 @@ def update_around_comp_hit(shot_coordinates: Tuple[int, int], computer_hits: boo
     update_available_to_fire_set(computer)
 
 
-def update_around_last_hit(shot_coordinates: Tuple[int, int], computer: ComputerPlayer) -> None:
+def update_around_last_hit(shot_coordinates: Point, computer: ComputerPlayer) -> None:
     """
     Обновляет множество вокруг последнего поражения компьютера
     """
@@ -113,7 +113,7 @@ def update_around_existing_hit(computer: ComputerPlayer) -> None:
     """
     Обновляет множество вокруг существующего поражения компьютера
     """
-    new_hit_set = set[Tuple[int, int]]()
+    new_hit_set = set[Point]()
 
     for hit_index in range(len(computer.last_hits) - 1):
         current_hit = computer.last_hits[hit_index]
@@ -138,7 +138,7 @@ def add_around_block(hit_set: set, x_coordinate: int, y_coordinate: int) -> None
         hit_set.add((x_coordinate, y_coordinate))
 
 
-def add_new_around_hit_blocks(shot_coordinates: tuple, computer: ComputerPlayer) -> None:
+def add_new_around_hit_blocks(shot_coordinates: Point, computer: ComputerPlayer) -> None:
     """
     Добавляет новые блоки вокруг последнего поражения компьютера
     """
@@ -149,7 +149,7 @@ def add_new_around_hit_blocks(shot_coordinates: tuple, computer: ComputerPlayer)
     add_around_block(computer.need_to_fire, x_coordinate, y_coordinate + 1)
 
 
-def remove_from_around_hit_set(shot_coordinates: Tuple[int, int], computer: ComputerPlayer) -> None:
+def remove_from_around_hit_set(shot_coordinates: Point, computer: ComputerPlayer) -> None:
     """
     Удаляет координаты выстрела из множества вокруг поражения компьютера
     """

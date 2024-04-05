@@ -1,16 +1,50 @@
 """Реализация классов Drawer, ShipDrawer"""
 import copy
-from typing import Set, List, Tuple
+from typing import Set, List, Tuple, Iterator
 import random
 import pygame
 import global_variables as my_space
+
+
+class Point:
+    """Класс схожий с Tuple[int, int] для упрощения кода"""
+
+    def __init__(self, x_coordinate: int, y_coordinate: int) -> None:
+        self.coordinate = (x_coordinate, y_coordinate)
+
+    def __lt__(self, other: 'Point') -> bool:
+        return self.coordinate < other.coordinate
+
+    def __getitem__(self, index: int) -> int:
+        return self.coordinate[index]
+
+    def __iter__(self) -> Iterator[Tuple[int, int]]:
+        return iter(self.coordinate)
+
+    def __repr__(self) -> str:
+        return f"{self.coordinate[0]} {self.coordinate[1]}"
+
+    def __eq__(self, other: 'Point') -> bool:
+        if not isinstance(other, Point):
+            return False
+        return (self.coordinate[0] == other.coordinate[0] and
+                self.coordinate[1] == other.coordinate[1])
+
+    def __ne__(self, other: 'Point') -> bool:
+        return not self.__eq__(other)
+
+    def __hash__(self) -> int:
+        return hash((self.coordinate[0], self.coordinate[1]))
+
+    def __is__(self, other: 'Point') -> bool:
+        return self is other
 
 
 class Drawer:
     """Рисовальщик, рисует на поле нужные знаки, фигуры"""
 
     @staticmethod
-    def draw_ship(ships_coord_list: List[Tuple[Tuple[int, int], Tuple[int, int]]],
+    def draw_ship(ships_coord_list: List[Tuple[Point, Point]],
                   offset: int) -> None:
         """
          Рисует прямоугольники вокруг блоков, занятых кораблем
@@ -33,7 +67,7 @@ class Drawer:
                              width=my_space.BLOCK_SIZE // my_space.GRID_SIZE)
 
     @staticmethod
-    def draw_dots(dots: Set[Tuple[int, int]]) -> None:
+    def draw_dots(dots: Set[Point]) -> None:
         """
         Рисует точки в центре всех блоков в dots
         """
@@ -44,7 +78,7 @@ class Drawer:
                                my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
 
     @staticmethod
-    def draw_hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
+    def draw_hit_blocks(hit_blocks: Set[Point]) -> None:
         """
         Рисует "X" в блоках, которые были успешно поражены либо компьютером, либо человеком
         """
@@ -61,13 +95,13 @@ class Drawer:
 
 
 def next_coordinate(coordinate: int, add: int, coord_x_or_y: int,
-                    ship_coordinate: List[Tuple[int, int]]) -> Tuple[int, int]:
+                    ship_coordinate: List[Point]) -> Point:
     """Вычисляет следующую координату корабля в заданном направлении на основе
     текущей координаты и направления движения"""
     if (coordinate <= 1 and add == -1) or (coordinate >= my_space.GRID_SIZE and add == 1):
         add *= -1
-        return add, ship_coordinate[0][coord_x_or_y] + add
-    return add, ship_coordinate[-1][coord_x_or_y] + add
+        return Point(add, ship_coordinate[0][coord_x_or_y] + add)
+    return Point(add, ship_coordinate[-1][coord_x_or_y] + add)
 
 
 def is_valid_coordinate(x_coordinate: int, y_coordinate: int) -> bool:
@@ -81,25 +115,26 @@ class ShipDrawer(Drawer):
     """Создаёт корабли и делает операции связанные с их состоянием"""
 
     def __init__(self):
-        """Инициализация"""
         self.available_blocks = set(
-            (x_coord, y_coord) for x_coord in range(1, my_space.GRID_LIMIT) for y_coord in
+            Point(x_coord, y_coord) for x_coord in range(1, my_space.GRID_LIMIT) for y_coord in
             range(1, my_space.GRID_LIMIT))
         self.ships_set = set()
         self.ships = self.generate_ships_grid()
         self.ships_copy = copy.deepcopy(self.ships)
 
-    def create_ship(self, num_blocks: int, available_blocks: Set[Tuple[int, int]]) \
-            -> List[Tuple[int, int]]:
+    def create_ship(self, num_blocks: int, available_blocks: Set[Point]) -> List[Point]:
         """
         Генерирует координаты для корабля заданной длины, учитывая доступные блоки на игровом поле.
         """
-        ship_coord = []
+        # print(num_blocks, len(available_blocks))
+        ship_coord = list[Point]()
         coord_x_or_y = random.randint(0, 1)
         add = random.choice((-1, 1))
+        # print(tuple(available_blocks))
+        # print(available_blocks)
         x_coordinate, y_coordinate = random.choice(tuple(available_blocks))
         for _ in range(num_blocks):
-            ship_coord.append((x_coordinate, y_coordinate))
+            ship_coord.append(Point(x_coordinate, y_coordinate))
             if not coord_x_or_y:
                 add, x_coordinate = next_coordinate(
                     x_coordinate, add, coord_x_or_y, ship_coord)
@@ -111,7 +146,7 @@ class ShipDrawer(Drawer):
             return ship_coord
         return self.create_ship(num_blocks, available_blocks)
 
-    def add_new_ship(self, ship: Set[Tuple[int, int]]) -> None:
+    def add_new_ship(self, ship: Set[Point]) -> None:
         """
         Добавляет все блоки в списке кораблей
         Аргументы:
@@ -119,7 +154,7 @@ class ShipDrawer(Drawer):
         """
         self.ships_set.update(ship)
 
-    def update_available_blocks(self, ship_coordinates: Set[Tuple[int, int]]) -> None:
+    def update_available_blocks(self, ship_coordinates: Set[Point]) -> None:
         """
         Удаляет все блоки, занятые кораблем и расположенные вокруг него, из набора доступных блоков.
         Аргументы:
@@ -132,9 +167,9 @@ class ShipDrawer(Drawer):
                     neighbor_y = coord[1] + offset_y
 
                     if is_valid_coordinate(neighbor_x, neighbor_y):
-                        self.available_blocks.discard((neighbor_x, neighbor_y))
+                        self.available_blocks.discard(Point(neighbor_x, neighbor_y))
 
-    def generate_ships_grid(self) -> List[List[Tuple[int, int]]]:
+    def generate_ships_grid(self) -> List[List[Point]]:
         """
         Генерирует необходимое количество кораблей каждого типа.
         Добавляет каждый корабль в список кораблей.

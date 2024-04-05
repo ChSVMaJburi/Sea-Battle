@@ -1,3 +1,4 @@
+"""Основной цикл игры и вспомогательные функции"""
 import pygame
 from button import Button
 import global_variables as my_space

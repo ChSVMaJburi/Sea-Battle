@@ -1,10 +1,10 @@
 """Реализуем классы Player, HumanPlayer"""
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from typing import List
 import pygame
 import global_variables as my_space
 from grid_class import Grid
-from drawer import ShipDrawer
+from drawer import ShipDrawer, Point
 
 
 class Player(ABC):
@@ -15,15 +15,15 @@ class Player(ABC):
         self.offset = offset
         self.create_board()
         self.drawer = ShipDrawer()
-        self.hit_blocks = set[Tuple[int, int]]()
-        self.dotted = set[Tuple[int, int]]()
+        self.hit_blocks = set[Point]()
+        self.dotted = set[Point]()
 
     def create_board(self):
         """Начинает процесс рисования доски"""
         Grid(self.name, self.offset)
 
     @abstractmethod
-    def update_dotted_and_hit(self, shot_coordinates: Tuple[int, int],
+    def update_dotted_and_hit(self, shot_coordinates: Point,
                               diagonal_only: bool) -> None:
         """Эта процедура добавляет точки вокруг клетки, в которую был произведен выстрел"""
 
@@ -41,7 +41,7 @@ class Player(ABC):
             self.update_dotted_and_hit(ship[ind], diagonal_only)
 
 
-def handle_mouse_event(event):
+def handle_mouse_event(event: pygame.event) -> Point or None:
     """Обрабатывает события мыши для хода игрока."""
     if event.type == pygame.MOUSEBUTTONDOWN:
         x_coordinate, y_coordinate = event.pos
@@ -51,8 +51,8 @@ def handle_mouse_event(event):
                  my_space.GRID_SIZE * my_space.BLOCK_SIZE) and
                     (my_space.UP_MARGIN < y_coordinate < my_space.UP_MARGIN +
                      my_space.GRID_SIZE * my_space.BLOCK_SIZE)):
-                return ((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
-                        (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
+                return Point((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
+                             (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
     return None
 
 
@@ -61,20 +61,20 @@ class HumanPlayer(Player):
 
     def __init__(self, name: str, offset: int):
         super().__init__(name, offset)
-        self.destroyed_ships = list[List[Tuple[int, int]]]()
+        self.destroyed_ships = list[List[Point]]()
 
-    def update_dotted_and_hit(self, shot_coordinates: Tuple[int, int],
+    def update_dotted_and_hit(self, shot_coordinates: Point,
                               diagonal_only: bool) -> None:
         """Эта процедура добавляет точки вокруг клетки, в которую был произведен выстрел"""
         fire_x_coordinate, fire_y_coordinate = shot_coordinates
         min_x, max_x = 0, my_space.GRID_LIMIT
-        self.hit_blocks.add((fire_x_coordinate, fire_y_coordinate))
+        self.hit_blocks.add(Point(fire_x_coordinate, fire_y_coordinate))
         for add_x_coordinate in range(-1, 2):
             for add_y_coordinate in range(-1, 2):
                 if (not diagonal_only and min_x < fire_x_coordinate + add_x_coordinate < max_x and
                         0 < fire_y_coordinate + add_y_coordinate < my_space.GRID_LIMIT):
-                    self.dotted.add((fire_x_coordinate + add_x_coordinate,
-                                     fire_y_coordinate + add_y_coordinate))
+                    self.dotted.add(Point(fire_x_coordinate + add_x_coordinate,
+                                          fire_y_coordinate + add_y_coordinate))
         self.dotted -= self.hit_blocks
 
     def shoot(self, other_player: Player, game_over: bool, shot_taken: bool) \
@@ -98,8 +98,7 @@ class HumanPlayer(Player):
                     other_turn = not self.__check_is_successful_hit(shot_coordinates, other_player)
         return game_over, other_turn, shot_taken
 
-    def __check_is_successful_hit(self, shot_coordinates: tuple[int, int],
-                                  other_player: Player) -> bool:
+    def __check_is_successful_hit(self, shot_coordinates: Point, other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
         for ship in other_player.drawer.ships_copy:
