@@ -76,7 +76,9 @@ class ComputerPlayer(Player):
                 self.last_hits.append(shot_coordinates)
                 other_player.drawer.ships_set.discard(shot_coordinates)
                 update_around_comp_hit(shot_coordinates, True, self)
+                # print(self.need_to_fire)
                 if not ship:
+                    # print("deleting")
                     self.process_destroyed_ship(position, other_player, False)
                     self.last_hits.clear()
                     self.need_to_fire.clear()
@@ -107,6 +109,7 @@ def update_around_last_hit(shot_coordinates: Point, computer: ComputerPlayer) ->
     """
     Обновляет множество вокруг последнего поражения компьютера
     """
+    # print(computer.last_hits, "computer last hits")
     if len(computer.last_hits) > 1:
         update_around_existing_hit(computer)
     else:
@@ -123,13 +126,17 @@ def update_around_existing_hit(computer: ComputerPlayer) -> None:
         current_hit = computer.last_hits[hit_index]
         next_hit = computer.last_hits[hit_index + 1]
 
-        if current_hit[0] == next_hit[0]:  # Если координаты по X одинаковы
+        if current_hit[0] == next_hit[0]:
             add_around_block(new_hit_set, current_hit[0], current_hit[1] - 1)
+            add_around_block(new_hit_set, current_hit[0], current_hit[1] + 1)
             add_around_block(new_hit_set, current_hit[0], next_hit[1] + 1)
-        elif current_hit[1] == next_hit[1]:  # Если координаты по Y одинаковы
+            add_around_block(new_hit_set, current_hit[0], next_hit[1] - 1)
+        elif current_hit[1] == next_hit[1]:
             add_around_block(new_hit_set, current_hit[0] - 1, current_hit[1])
+            add_around_block(new_hit_set, current_hit[0] + 1, current_hit[1])
             add_around_block(new_hit_set, next_hit[0] + 1, current_hit[1])
-
+            add_around_block(new_hit_set, next_hit[0] - 1, current_hit[1])
+    # print(computer.need_to_fire, new_hit_set, "check")
     computer.need_to_fire = new_hit_set
 
 
@@ -164,6 +171,7 @@ def remove_used_blocks_from_around_hit_set(computer: ComputerPlayer) -> None:
     """
     Удаляет уже использованные блоки из множества вокруг поражения компьютера
     """
+    # print("checking dot", computer.need_to_fire, computer.dotted_to_shot, computer.to_shot)
     computer.need_to_fire -= computer.dotted_to_shot
     computer.need_to_fire -= computer.to_shot
 

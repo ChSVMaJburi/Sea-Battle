@@ -12,5 +12,3 @@ def play_console_type():
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     human_board = ConsoleBoard("HUMAN")
     computer_board = ConsoleBoard("COMPUTER")
-    show(human_board, computer_board)
-

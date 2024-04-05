@@ -23,7 +23,7 @@ class Button:
     change_color_on_hover(): Рисует кнопку в виде прямоугольника зеленого цвета.
     """
 
-    def __init__(self, x_offset: int, text: str):
+    def __init__(self, x_offset: int, y_offset: int, text: str):
         if not my_space.IS_PYGAME_INIT:
             init_pygame()
         self.text = text
@@ -32,8 +32,8 @@ class Button:
         self.button_height = self.text_height + my_space.BLOCK_SIZE
         self.x_coordinate = x_offset + my_space.BLOCK_SIZE
         self.y_coordinate = (
-                my_space.UP_MARGIN + my_space.BUTTON_BLOCK_OFFSET * my_space.BLOCK_SIZE +
-                self.button_height)
+                y_offset + my_space.UP_MARGIN + my_space.BUTTON_BLOCK_OFFSET * my_space.BLOCK_SIZE
+                + self.button_height)
         self.draw = (self.x_coordinate, self.y_coordinate - my_space.TEXT_MARGIN,
                      self.button_width - my_space.BUTTON_MARGIN, self.button_height)
         self.rect = pygame.Rect(self.draw)

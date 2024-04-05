@@ -34,9 +34,9 @@ def play_gui_type() -> None:
     """Запускает игровой цикл"""
     pygame.init()
     start_game_position = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
-    start_button = Button(start_game_position, "START GAME")
+    start_button = Button(start_game_position, 0, "START GAME")
     Grid("HUMAN", 0)
-    Grid("HUMAN", my_space.DISTANCE)
+    Grid("COMPUTER", my_space.DISTANCE)
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     Drawer.draw_ship(human.drawer.ships, computer.offset)
@@ -54,7 +54,7 @@ def play_gui_type() -> None:
         Drawer.draw_ship(human.destroyed_ships, human.offset)
         if not computer.drawer.ships_set:
             show_message(
-                "YOU WIN!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]))
+                "YOU WIN!", (0, 300, my_space.SIZE[0], my_space.SIZE[1]))
         if not human.drawer.ships_set:
             show_message(
                 "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]))
@@ -67,12 +67,12 @@ def show_message(message: str, rectangle: tuple) -> None:
     """
     Выводит сообщение на экран в центре заданного прямоугольника.
     """
-    message_width, message_height = my_space.FONT.size(message)
+    message_width, message_height = my_space.GAME_OVER.size(message)
     message_rectangle = pygame.Rect(rectangle)
     x_coordinate = message_rectangle.centerx - message_width / 2
     y_coordinate = message_rectangle.centery - message_height / 2
     background_rect = pygame.Rect(x_coordinate - my_space.BLOCK_SIZE / 2,
                                   y_coordinate, message_width + my_space.BLOCK_SIZE, message_height)
-    message_rendered = my_space.FONT.render(message, True, my_space.RED)
+    message_rendered = my_space.GAME_OVER.render(message, True, my_space.RED)
     my_space.screen.fill(my_space.BLUE, background_rect)
     my_space.screen.blit(message_rendered, (x_coordinate, y_coordinate))
