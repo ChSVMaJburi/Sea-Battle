@@ -40,9 +40,9 @@ class Grid(Drawer):
         Рисует цифры 1-10 по вертикали и добавляет буквы под горизонталью
         линии для обеих сеток
         """
-        for digit in range(my_space.MAX_DIGIT):
-            num_vertical = my_space.font.render(str(digit + 1), True, my_space.BLACK)
-            letters_horizontal = my_space.font.render(
+        for digit in range(my_space.GRID_SIZE):
+            num_vertical = my_space.FONT.render(str(digit + 1), True, my_space.BLACK)
+            letters_horizontal = my_space.FONT.render(
                 my_space.LETTERS[digit], True, my_space.BLACK)
             num_vertical_width = num_vertical.get_width()
             num_vertical_height = num_vertical.get_height()
@@ -65,7 +65,7 @@ class Grid(Drawer):
         """
         Помещает имена игроков в центр над сетками
         """
-        player = my_space.font.render(self.title, True, my_space.RED)
+        player = my_space.FONT.render(self.title, True, my_space.RED)
         sign_width = player.get_width()
         my_space.screen.blit(player,
                              (my_space.LEFT_MARGIN + 5 * my_space.BLOCK_SIZE - sign_width // 2 +

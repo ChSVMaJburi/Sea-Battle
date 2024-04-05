@@ -8,8 +8,9 @@ def init_pygame() -> None:
     """Проделаем стартовые операции pygame"""
     my_space.screen = pygame.display.set_mode(my_space.SIZE)
     my_space.FONT_SIZE = int(my_space.BLOCK_SIZE / 1.5)
-    my_space.font = pygame.font.SysFont('notosans', my_space.FONT_SIZE)
+    my_space.FONT = pygame.font.SysFont('notosans', my_space.FONT_SIZE)
     my_space.GAME_OVER = pygame.font.SysFont('notosans', 3 * my_space.BLOCK_SIZE)
+
     my_space.screen.fill(my_space.BLUE)
     pygame.display.set_caption("Sea Battle")
 
@@ -25,7 +26,7 @@ class Button:
         if not my_space.IS_PYGAME_INIT:
             init_pygame()
         self.text = text
-        self.text_width, self.text_height = my_space.font.size(self.text)
+        self.text_width, self.text_height = my_space.FONT.size(self.text)
         self.button_width = self.text_width + my_space.BLOCK_SIZE
         self.button_height = self.text_height + my_space.BLOCK_SIZE
         self.x_coordinate = x_offset + my_space.BLOCK_SIZE
@@ -50,7 +51,7 @@ class Button:
         if not color:
             color = self.default_color
         pygame.draw.rect(my_space.screen, color, self.draw)
-        text = my_space.font.render(self.text, True, my_space.RED)
+        text = my_space.FONT.render(self.text, True, my_space.RED)
         my_space.screen.blit(text, self.text_position)
 
     def change_color_on_hover(self) -> None:

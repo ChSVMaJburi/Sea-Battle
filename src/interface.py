@@ -36,7 +36,7 @@ def display_the_start_screen(game_over: bool) -> tuple[bool, bool]:
 def play() -> None:
     """Запускает игровой цикл"""
     human = HumanPlayer("HUMAN", 0)
-    computer = ComputerPlayer("COMPUTER", my_space.MAX_X_OFFSET)
+    computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     Drawer.draw_ship(human.drawer.ships, computer.offset)
     Drawer.draw_ship(computer.drawer.ships, human.offset)
     turn_two = False
@@ -61,7 +61,7 @@ def play() -> None:
     pygame.quit()
 
 
-def show_message(message: str, rectangle: tuple, font=my_space.font) -> None:
+def show_message(message: str, rectangle: tuple, font=my_space.FONT) -> None:
     """
     Выводит сообщение на экран в центре заданного прямоугольника.
     """

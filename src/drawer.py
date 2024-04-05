@@ -9,6 +9,7 @@ import global_variables as my_space
 class Drawer:
     """Рисовальщик, рисует на поле нужные знаки, фигуры"""
 
+    @staticmethod
     def draw_ship(ships_coord_list: List[Tuple[Tuple[int, int], Tuple[int, int]]],
                   offset: int) -> None:
         """
@@ -31,6 +32,7 @@ class Drawer:
                              ((x_coord, y_coord), (ship_width, ship_height)),
                              width=my_space.BLOCK_SIZE // my_space.GRID_SIZE)
 
+    @staticmethod
     def draw_dots(dots: Set[Tuple[int, int]]) -> None:
         """
         Рисует точки в центре всех блоков в dots
@@ -41,6 +43,7 @@ class Drawer:
                 my_space.BLOCK_SIZE * (dot[1] - 0.5) + my_space.UP_MARGIN),
                                my_space.BLOCK_SIZE // my_space.SHIPS_LIMIT)
 
+    @staticmethod
     def draw_hit_blocks(hit_blocks: Set[Tuple[int, int]]) -> None:
         """
         Рисует "X" в блоках, которые были успешно поражены либо компьютером, либо человеком
@@ -50,18 +53,18 @@ class Drawer:
             y_coordinate = my_space.BLOCK_SIZE * (block[1] - 1) + my_space.UP_MARGIN
             pygame.draw.line(my_space.screen, my_space.BLACK, (x_coordinate, y_coordinate),
                              (x_coordinate + my_space.BLOCK_SIZE, y_coordinate +
-                              my_space.BLOCK_SIZE), my_space.BLOCK_SIZE // my_space.SEVEN)
+                              my_space.BLOCK_SIZE), my_space.BLOCK_SIZE // my_space.DIVIDE)
             pygame.draw.line(my_space.screen, my_space.BLACK,
                              (x_coordinate, y_coordinate + my_space.BLOCK_SIZE),
                              (x_coordinate + my_space.BLOCK_SIZE, y_coordinate),
-                             my_space.BLOCK_SIZE // my_space.SEVEN)
+                             my_space.BLOCK_SIZE // my_space.DIVIDE)
 
 
-def add_ship(coordinate: int, add: int, coord_x_or_y: int,
-             ship_coordinate: List[Tuple[int, int]]) -> Tuple[int, int]:
+def next_coordinate(coordinate: int, add: int, coord_x_or_y: int,
+                    ship_coordinate: List[Tuple[int, int]]) -> Tuple[int, int]:
     """Вычисляет следующую координату корабля в заданном направлении на основе
     текущей координаты и направления движения"""
-    if (coordinate <= 1 and add == -1) or (coordinate >= my_space.MAX_DIGIT and add == 1):
+    if (coordinate <= 1 and add == -1) or (coordinate >= my_space.GRID_SIZE and add == 1):
         add *= -1
         return add, ship_coordinate[0][coord_x_or_y] + add
     return add, ship_coordinate[-1][coord_x_or_y] + add
@@ -71,7 +74,7 @@ def is_valid_coordinate(x_coordinate: int, y_coordinate: int) -> bool:
     """
     Проверяет, являются ли координаты корректными для игрового поля.
     """
-    return 1 <= x_coordinate <= my_space.MAX_DIGIT and 1 <= y_coordinate <= my_space.MAX_DIGIT
+    return 1 <= x_coordinate <= my_space.GRID_SIZE and 1 <= y_coordinate <= my_space.GRID_SIZE
 
 
 class ShipDrawer(Drawer):
@@ -98,10 +101,10 @@ class ShipDrawer(Drawer):
         for _ in range(num_blocks):
             ship_coord.append((x_coordinate, y_coordinate))
             if not coord_x_or_y:
-                add, x_coordinate = add_ship(
+                add, x_coordinate = next_coordinate(
                     x_coordinate, add, coord_x_or_y, ship_coord)
             else:
-                add, y_coordinate = add_ship(
+                add, y_coordinate = next_coordinate(
                     y_coordinate, add, coord_x_or_y, ship_coord)
         ship = set(ship_coord)
         if ship.issubset(self.available_blocks):
@@ -142,6 +145,6 @@ class ShipDrawer(Drawer):
             for _ in range(my_space.SHIPS_LIMIT - ship_size):
                 ship = self.create_ship(ship_size, self.available_blocks)
                 ships_grid.append(ship)
-                self.add_new_ship(ship)
-                self.update_available_blocks(ship)
+                self.add_new_ship(set(ship))
+                self.update_available_blocks(set(ship))
         return ships_grid

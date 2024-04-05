@@ -1,6 +1,6 @@
 """Реализуем классы Player, HumanPlayer"""
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Tuple, List
 import pygame
 import global_variables as my_space
 from grid_class import Grid
@@ -15,8 +15,8 @@ class Player(ABC):
         self.offset = offset
         self.create_board()
         self.drawer = ShipDrawer()
-        self.hit_blocks = set()
-        self.dotted = set()
+        self.hit_blocks = set[Tuple[int, int]]()
+        self.dotted = set[Tuple[int, int]]()
 
     def create_board(self):
         """Начинает процесс рисования доски"""
@@ -48,9 +48,9 @@ def handle_mouse_event(event):
         if (my_space.MIN_X <= x_coordinate <= my_space.MAX_X and
                 my_space.MIN_Y <= y_coordinate <= my_space.MAX_Y):
             if ((my_space.LEFT_MARGIN < x_coordinate < my_space.LEFT_MARGIN +
-                 my_space.GRID_OFFSET * my_space.BLOCK_SIZE) and
+                 my_space.GRID_SIZE * my_space.BLOCK_SIZE) and
                     (my_space.UP_MARGIN < y_coordinate < my_space.UP_MARGIN +
-                     my_space.GRID_OFFSET * my_space.BLOCK_SIZE)):
+                     my_space.GRID_SIZE * my_space.BLOCK_SIZE)):
                 return ((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
                         (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
     return None
@@ -61,7 +61,7 @@ class HumanPlayer(Player):
 
     def __init__(self, name: str, offset: int):
         super().__init__(name, offset)
-        self.destroyed_ships = []
+        self.destroyed_ships = list[List[Tuple[int, int]]]()
 
     def update_dotted_and_hit(self, shot_coordinates: Tuple[int, int],
                               diagonal_only: bool) -> None:
@@ -112,6 +112,7 @@ class HumanPlayer(Player):
                 other_player.drawer.ships_set.discard(shot_coordinates)
                 if not ship:
                     self.process_destroyed_ship(position, other_player, False)
+                    # print(type(other_player.drawer.ships[position][0]))
                     self.destroyed_ships.append(other_player.drawer.ships[position])
                 return True
 

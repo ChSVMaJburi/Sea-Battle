@@ -11,13 +11,12 @@ class ComputerPlayer(Player):
 
     def __init__(self, name: str, offset: int):
         super().__init__(name, offset)
-        self.need_to_fire = set()
-        self.to_shot = set()
-        self.last_hits = []
-        self.dotted_to_shot = set()
-        self.available_to_fire_set = set(
-            (a, b) for a in range(1, my_space.GRID_LIMIT) for b in
-            range(1, my_space.GRID_LIMIT))
+        self.need_to_fire = set[Tuple[int, int]]()
+        self.to_shot = set[Tuple[int, int]]()
+        self.last_hits = list[Tuple[int, int]]()
+        self.dotted_to_shot = set[Tuple[int, int]]()
+        self.available_to_fire_set = set[Tuple[int, int]](
+            (a, b) for a in range(1, my_space.GRID_LIMIT) for b in range(1, my_space.GRID_LIMIT))
         # print(sorted(self.available_to_fire_set), sep="\n")
 
     def update_dotted_and_hit(self, shot_coordinates: Tuple[int, int],
@@ -59,7 +58,7 @@ class ComputerPlayer(Player):
         self.available_to_fire_set.discard(computer_fired)
         return self.__check_is_successful_hit(computer_fired, other_player)
 
-    def __check_is_successful_hit(self, shot_coordinates: tuple[int, int],
+    def __check_is_successful_hit(self, shot_coordinates: Tuple[int, int],
                                   other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
@@ -85,7 +84,7 @@ class ComputerPlayer(Player):
         return False
 
 
-def update_around_comp_hit(shot_coordinates: tuple, computer_hits: bool,
+def update_around_comp_hit(shot_coordinates: Tuple[int, int], computer_hits: bool,
                            computer: ComputerPlayer) -> None:
     """
     Обновляет набор блоков вокруг последнего поражения компьютера, удаляя блоки,
@@ -100,7 +99,7 @@ def update_around_comp_hit(shot_coordinates: tuple, computer_hits: bool,
     update_available_to_fire_set(computer)
 
 
-def update_around_last_hit(shot_coordinates: tuple, computer: ComputerPlayer) -> None:
+def update_around_last_hit(shot_coordinates: Tuple[int, int], computer: ComputerPlayer) -> None:
     """
     Обновляет множество вокруг последнего поражения компьютера
     """
@@ -114,7 +113,7 @@ def update_around_existing_hit(computer: ComputerPlayer) -> None:
     """
     Обновляет множество вокруг существующего поражения компьютера
     """
-    new_hit_set = set()
+    new_hit_set = set[Tuple[int, int]]()
 
     for hit_index in range(len(computer.last_hits) - 1):
         current_hit = computer.last_hits[hit_index]
@@ -150,7 +149,7 @@ def add_new_around_hit_blocks(shot_coordinates: tuple, computer: ComputerPlayer)
     add_around_block(computer.need_to_fire, x_coordinate, y_coordinate + 1)
 
 
-def remove_from_around_hit_set(shot_coordinates: tuple, computer: ComputerPlayer) -> None:
+def remove_from_around_hit_set(shot_coordinates: Tuple[int, int], computer: ComputerPlayer) -> None:
     """
     Удаляет координаты выстрела из множества вокруг поражения компьютера
     """
