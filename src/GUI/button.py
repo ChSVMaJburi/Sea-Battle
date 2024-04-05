@@ -1,7 +1,8 @@
 """Реализуется класс Button"""
 from typing import Tuple
 import pygame
-import global_variables as my_space
+
+import src.global_variables as my_space
 
 
 def init_pygame() -> None:

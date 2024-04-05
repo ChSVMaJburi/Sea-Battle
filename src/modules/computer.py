@@ -3,9 +3,9 @@ import random
 from typing import Set
 
 import pygame
-from players import Player
-import global_variables as my_space
-from drawer import Point
+from src.modules.players import Player
+import src.global_variables as my_space
+from src.GUI.drawer import Point
 
 
 class ComputerPlayer(Player):

@@ -1,10 +1,10 @@
 """Основной цикл игры и вспомогательные функции"""
 import pygame
-from button import Button
-import global_variables as my_space
-from drawer import Drawer
-from players import HumanPlayer
-from computer import ComputerPlayer
+from src.GUI.button import Button
+import src.global_variables as my_space
+from src.GUI.drawer import Drawer
+from src.modules.players import HumanPlayer
+from src.modules.computer import ComputerPlayer
 
 pygame.init()
 
