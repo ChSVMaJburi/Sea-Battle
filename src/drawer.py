@@ -24,10 +24,12 @@ class Point:
     def __repr__(self) -> str:
         return f"{self.coordinate[0]} {self.coordinate[1]}"
 
-    def __eq__(self, other: 'Point') -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Point):
+            return False
         return self.coordinate == other.coordinate
 
-    def __ne__(self, other: 'Point') -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
@@ -108,7 +110,7 @@ def is_valid_coordinate(x_coordinate: int, y_coordinate: int) -> bool:
     return 1 <= x_coordinate <= my_space.GRID_SIZE and 1 <= y_coordinate <= my_space.GRID_SIZE
 
 
-class ShipDrawer(Drawer):
+class ShipDrawer:
     """Создаёт корабли и делает операции связанные с их состоянием"""
 
     def __init__(self):

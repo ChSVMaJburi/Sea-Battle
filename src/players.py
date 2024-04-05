@@ -4,7 +4,7 @@ from typing import List
 import pygame
 import global_variables as my_space
 from grid_class import Grid
-from drawer import ShipDrawer, Point
+from drawer import ShipDrawer, Point, Drawer
 
 
 class Player(ABC):
@@ -39,6 +39,7 @@ class Player(ABC):
         ship = sorted(other_player.drawer.ships[pos])
         for ind in range(-1, 1):
             self.update_dotted_and_hit(ship[ind], diagonal_only)
+        # Drawer().draw_ship(other_player.drawer.ships[pos], 0)
 
 
 def handle_mouse_event(event: pygame.event) -> Point or None:

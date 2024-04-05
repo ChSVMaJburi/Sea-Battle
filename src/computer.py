@@ -15,10 +15,12 @@ class ComputerPlayer(Player):
         super().__init__(name, offset)
         self.need_to_fire = set[Point]()
         self.to_shot = set[Point]()
+        self.horizontal = -1
         self.last_hits = list[Point]()
         self.dotted_to_shot = set[Point]()
         self.available_to_fire_set = set[Point](
-            (a, b) for a in range(1, my_space.GRID_LIMIT) for b in range(1, my_space.GRID_LIMIT))
+            Point(a, b) for a in range(1, my_space.GRID_LIMIT) for b in
+            range(1, my_space.GRID_LIMIT))
         # print(sorted(self.available_to_fire_set), sep="\n")
 
     def update_dotted_and_hit(self, shot_coordinates: Point,
@@ -48,6 +50,7 @@ class ComputerPlayer(Player):
                 is_hit = self.__random_shoot(self.need_to_fire, other_player)
             else:
                 is_hit = self.__random_shoot(self.available_to_fire_set, other_player)
+        # print("is hit?", is_hit, self.last_hits, self.need_to_fire)
         # print(len(self.available_to_fire_set))
         return game_over, is_hit, True
 
@@ -57,7 +60,6 @@ class ComputerPlayer(Player):
         """
         pygame.time.delay(my_space.DELAY_FOR_COMPUTER_SHOT)
         computer_fired = random.choice(list(set_to_shot))
-        computer_fired = Point(computer_fired[0], computer_fired[1])
         self.available_to_fire_set.discard(computer_fired)
         return self.__check_is_successful_hit(computer_fired, other_player)
 
@@ -105,7 +107,7 @@ def update_around_last_hit(shot_coordinates: Point, computer: ComputerPlayer) ->
     """
     Обновляет множество вокруг последнего поражения компьютера
     """
-    if shot_coordinates in computer.drawer.ships_set:
+    if len(computer.last_hits) > 1:
         update_around_existing_hit(computer)
     else:
         add_new_around_hit_blocks(shot_coordinates, computer)
@@ -131,13 +133,13 @@ def update_around_existing_hit(computer: ComputerPlayer) -> None:
     computer.need_to_fire = new_hit_set
 
 
-def add_around_block(hit_set: set, x_coordinate: int, y_coordinate: int) -> None:
+def add_around_block(hit_set: Set[Point], x_coordinate: int, y_coordinate: int) -> None:
     """
     Добавляет блок вокруг поражения компьютера в множество
     """
-    if my_space.MIN_COORDINATE_VALUE < x_coordinate <= my_space.MAX_COORDINATE_VALUE \
-            and my_space.MIN_COORDINATE_VALUE < y_coordinate <= my_space.MAX_COORDINATE_VALUE:
-        hit_set.add((x_coordinate, y_coordinate))
+    if my_space.MIN_COORDINATE_VALUE <= x_coordinate <= my_space.MAX_COORDINATE_VALUE \
+            and my_space.MIN_COORDINATE_VALUE <= y_coordinate <= my_space.MAX_COORDINATE_VALUE:
+        hit_set.add(Point(x_coordinate, y_coordinate))
 
 
 def add_new_around_hit_blocks(shot_coordinates: Point, computer: ComputerPlayer) -> None:
@@ -170,4 +172,5 @@ def update_available_to_fire_set(computer: ComputerPlayer) -> None:
     """
     Обновляет доступные блоки для стрельбы
     """
-    computer.available_to_fire_set = computer.available_to_fire_set - computer.need_to_fire
+    computer.available_to_fire_set -= computer.dotted_to_shot
+    computer.available_to_fire_set -= computer.to_shot

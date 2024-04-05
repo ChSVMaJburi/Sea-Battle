@@ -39,7 +39,7 @@ def play() -> None:
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     Drawer.draw_ship(human.drawer.ships, computer.offset)
-    Drawer.draw_ship(computer.drawer.ships, human.offset)
+    # Drawer.draw_ship(computer.drawer.ships, human.offset)
     turn_two = False
     shot_taken, game_over = display_the_start_screen(False)
     while not game_over:
@@ -50,7 +50,7 @@ def play() -> None:
 
         Drawer.draw_dots(human.dotted | computer.dotted)
         Drawer.draw_hit_blocks(human.hit_blocks | computer.hit_blocks)
-        # Drawer.draw_ship(human.destroyed_ships, human.offset)
+        Drawer.draw_ship(human.destroyed_ships, human.offset)
         if not computer.drawer.ships_set:
             show_message(
                 "YOU WIN!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]), my_space.GAME_OVER)
