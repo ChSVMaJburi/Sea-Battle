@@ -13,9 +13,11 @@ class Player(ABC):
     def __init__(self, name: str, offset: int):
         self.name = name
         self.offset = offset
-        self.drawer = ShipManager()
+        self.ship_manager = ShipManager()
         self.hit_blocks = set[Point]()
         self.dotted = set[Point]()
+        self.injured = set[Point]()
+        self.missed = set[Point]()
 
     @abstractmethod
     def update_dotted_and_hit(self, shot_coordinates: Point,
@@ -31,7 +33,7 @@ class Player(ABC):
         """
         Обрабатывает процесс уничтожения корабля
         """
-        ship = sorted(other_player.drawer.ships[pos])
+        ship = sorted(other_player.ship_manager.ships[pos])
         for ind in range(-1, 1):
             self.update_dotted_and_hit(ship[ind], diagonal_only)
         # Drawer().draw_ship(other_player.drawer.ships[pos], 0)
@@ -94,22 +96,24 @@ class HumanPlayer(Player):
                     other_turn = not self.__check_is_successful_hit(shot_coordinates, other_player)
         return game_over, other_turn, shot_taken
 
-    def __check_is_successful_hit(self, shot_coordinates: Point, other_player: Player) -> bool:
+    def __check_is_successful_hit(self, shoot: Point, other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
-        for ship in other_player.drawer.ships_copy:
-            if shot_coordinates in ship:
-                self.update_dotted_and_hit(shot_coordinates, True)
-                position = other_player.drawer.ships_copy.index(ship)
+        for ship in other_player.ship_manager.ships_copy:
+            if shoot in ship:
+                self.update_dotted_and_hit(shoot, True)
+                position = other_player.ship_manager.ships_copy.index(ship)
                 if len(ship) == 1:
-                    self.update_dotted_and_hit(shot_coordinates, True)
-                ship.remove(shot_coordinates)
-                other_player.drawer.ships_set.discard(shot_coordinates)
+                    self.update_dotted_and_hit(shoot, True)
+                ship.remove(shoot)
+                other_player.ship_manager.ships_set.discard(shoot)
+                other_player.injured.add(shoot)
                 if not ship:
                     self.process_destroyed_ship(position, other_player, False)
                     # print(type(other_player.drawer.ships[position][0]))
-                    self.destroyed_ships.append(other_player.drawer.ships[position])
+                    self.destroyed_ships.append(other_player.ship_manager.ships[position])
                 return True
 
-        self.dotted.add(shot_coordinates)
+        other_player.missed.add(shoot)
+        self.dotted.add(shoot)
         return False

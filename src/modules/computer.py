@@ -63,20 +63,20 @@ class ComputerPlayer(Player):
         self.available_to_fire_set.discard(computer_fired)
         return self.__check_is_successful_hit(computer_fired, other_player)
 
-    def __check_is_successful_hit(self, shot_coordinates: Point, other_player: Player) -> bool:
+    def __check_is_successful_hit(self, shoot: Point, other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
-        for ship in other_player.drawer.ships_copy:
-            if shot_coordinates in ship:
-                self.update_dotted_and_hit(shot_coordinates, True)
-                position = other_player.drawer.ships_copy.index(ship)
+        for ship in other_player.ship_manager.ships_copy:
+            if shoot in ship:
+                self.update_dotted_and_hit(shoot, True)
+                position = other_player.ship_manager.ships_copy.index(ship)
                 if len(ship) == 1:
-                    self.update_dotted_and_hit(shot_coordinates, True)
-                ship.remove(shot_coordinates)
-                self.last_hits.append(shot_coordinates)
-                other_player.drawer.ships_set.discard(shot_coordinates)
-                update_around_comp_hit(shot_coordinates, True, self)
-                # print(self.need_to_fire)
+                    self.update_dotted_and_hit(shoot, True)
+                ship.remove(shoot)
+                self.last_hits.append(shoot)
+                other_player.ship_manager.ships_set.discard(shoot)
+                update_around_comp_hit(shoot, True, self)
+                other_player.injured.add(shoot)
                 if not ship:
                     # print("deleting")
                     self.process_destroyed_ship(position, other_player, False)
@@ -84,9 +84,10 @@ class ComputerPlayer(Player):
                     self.need_to_fire.clear()
                 return True
 
-        self.dotted.add((shot_coordinates[0] + my_space.DISTANCE, shot_coordinates[1]))
-        self.dotted_to_shot.add(shot_coordinates)
-        update_around_comp_hit(shot_coordinates, False, self)
+        other_player.missed.add(shoot)
+        self.dotted.add((shoot[0] + my_space.DISTANCE, shoot[1]))
+        self.dotted_to_shot.add(shoot)
+        update_around_comp_hit(shoot, False, self)
         return False
 
 

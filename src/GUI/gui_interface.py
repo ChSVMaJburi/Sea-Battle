@@ -39,7 +39,7 @@ def play_gui_type() -> None:
     Grid("COMPUTER", my_space.DISTANCE)
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
-    Drawer.draw_ship(human.drawer.ships, computer.offset)
+    Drawer.draw_ship(human.ship_manager.ships, computer.offset)
     # Drawer.draw_ship(computer.drawer.ships, human.offset)
     turn_two = False
     shot_taken, game_over = display_the_start_screen(False, start_button)
@@ -52,13 +52,13 @@ def play_gui_type() -> None:
         Drawer.draw_dots(human.dotted | computer.dotted)
         Drawer.draw_hit_blocks(human.hit_blocks | computer.hit_blocks)
         Drawer.draw_ship(human.destroyed_ships, human.offset)
-        if not computer.drawer.ships_set:
+        if not computer.ship_manager.ships_set:
             show_message(
                 "YOU WIN!", (0, 300, my_space.SIZE[0], my_space.SIZE[1]))
-        if not human.drawer.ships_set:
+        if not human.ship_manager.ships_set:
             show_message(
                 "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]))
-            Drawer.draw_ship(computer.drawer.ships, human.offset)
+            Drawer.draw_ship(computer.ship_manager.ships, human.offset)
         pygame.display.update()
     pygame.quit()
 

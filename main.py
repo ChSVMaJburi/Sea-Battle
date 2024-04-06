@@ -1,10 +1,10 @@
 """Основной файл"""
 from src.GUI.gui_interface import play_gui_type
-# from src.console.console_interface import play_console_type
-# from src.console.support_functions import ask_question
+from src.console.console_interface import play_console_type
+from src.console.support_functions import ask_question
 import sys
-sys.stdin = open(sys.stdin.fileno(), mode='r', encoding='utf-8', buffering=True)
 
+sys.stdin = open(sys.stdin.fileno(), mode='r', encoding='utf-8', buffering=True)
 
 if __name__ == "__main__":
     print("\nПривет!\n")
