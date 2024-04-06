@@ -4,7 +4,7 @@ from src.GUI.button import Button
 import src.global_variables as my_space
 from src.GUI.gui_drawer import Drawer
 from src.GUI.grid_class import Grid
-from src.modules.players import HumanPlayer
+from src.modules.human import HumanPlayer
 from src.modules.computer import ComputerPlayer
 
 
@@ -45,9 +45,9 @@ def play_gui_type() -> None:
     shot_taken, game_over = display_the_start_screen(False, start_button)
     while not game_over:
         if turn_two:
-            game_over, turn_two, shot_taken = computer.shoot(human, game_over, shot_taken)
+            turn_two, shot_taken = computer.shoot(human, shot_taken)
         else:
-            game_over, turn_two, shot_taken = human.shoot(computer, game_over, shot_taken)
+            turn_two, shot_taken = human.shoot(computer, shot_taken)
 
         Drawer.draw_dots(human.dotted | computer.dotted)
         Drawer.draw_hit_blocks(human.hit_blocks | computer.hit_blocks)
@@ -55,9 +55,11 @@ def play_gui_type() -> None:
         if not computer.ship_manager.ships_set:
             show_message(
                 "YOU WIN!", (0, 300, my_space.SIZE[0], my_space.SIZE[1]))
+            game_over = True
         if not human.ship_manager.ships_set:
             show_message(
                 "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]))
+            game_over = True
             Drawer.draw_ship(computer.ship_manager.ships, human.offset)
         pygame.display.update()
     pygame.quit()

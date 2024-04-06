@@ -1,9 +1,9 @@
 """В этом модуле реализуется ComputerPlayer и вспомогательные для неё функции и процедуры"""
 import random
-from typing import Set
+from typing import Set, Tuple
 
 import pygame
-from src.modules.players import Player
+from src.modules.player_class import Player
 import src.global_variables as my_space
 from src.GUI.gui_drawer import Point
 
@@ -41,18 +41,15 @@ class ComputerPlayer(Player):
                                                   fire_y_coordinate + add_y_coordinate))
         self.dotted -= self.hit_blocks
 
-    def shoot(self, other_player: Player, game_over: bool, shot_taken: bool) \
-            -> tuple[bool, bool, bool]:
+    def shoot(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
         """Стреляет от имени компьютера"""
-        is_hit = False
-        if not game_over:
-            if self.need_to_fire:
-                is_hit = self.__random_shoot(self.need_to_fire, other_player)
-            else:
-                is_hit = self.__random_shoot(self.available_to_fire_set, other_player)
+        if self.need_to_fire:
+            is_hit = self.__random_shoot(self.need_to_fire, other_player)
+        else:
+            is_hit = self.__random_shoot(self.available_to_fire_set, other_player)
         # print("is hit?", is_hit, self.last_hits, self.need_to_fire)
         # print(len(self.available_to_fire_set))
-        return game_over, is_hit, True
+        return is_hit, True
 
     def __random_shoot(self, set_to_shot: Set[Point], other_player: Player) -> bool:
         """
@@ -61,6 +58,8 @@ class ComputerPlayer(Player):
         pygame.time.delay(my_space.DELAY_FOR_COMPUTER_SHOT)
         computer_fired = random.choice(list(set_to_shot))
         self.available_to_fire_set.discard(computer_fired)
+        print(f"Компьютер решил выстрелить в "
+              f"{chr(computer_fired[1] - 1 + ord('A')), computer_fired[0]}")
         return self.__check_is_successful_hit(computer_fired, other_player)
 
     def __check_is_successful_hit(self, shoot: Point, other_player: Player) -> bool:
@@ -80,6 +79,10 @@ class ComputerPlayer(Player):
                 if not ship:
                     # print("deleting")
                     self.process_destroyed_ship(position, other_player, False)
+                    for coordinate in self.dotted:
+                        other_player.missed.add(
+                            Point(coordinate[0] - my_space.DISTANCE, coordinate[1]))
+                    # print(self.dotted)
                     self.last_hits.clear()
                     self.need_to_fire.clear()
                 return True

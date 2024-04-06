@@ -1,57 +1,9 @@
-"""Реализуем классы Player, HumanPlayer"""
-from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 import pygame
+from src.console.message_functions import get_coordinates_from_console
+from src.modules.player_class import Player
+from src.modules.ship_manager import Point
 import src.global_variables as my_space
-from src.GUI.gui_drawer import Point
-from src.modules.ship_manager import ShipManager
-
-
-class Player(ABC):
-    """Реализуем класс Player"""
-
-    def __init__(self, name: str, offset: int):
-        self.name = name
-        self.offset = offset
-        self.ship_manager = ShipManager()
-        self.hit_blocks = set[Point]()
-        self.dotted = set[Point]()
-        self.injured = set[Point]()
-        self.missed = set[Point]()
-
-    @abstractmethod
-    def update_dotted_and_hit(self, shot_coordinates: Point,
-                              diagonal_only: bool) -> None:
-        """Эта процедура добавляет точки вокруг клетки, в которую был произведен выстрел"""
-
-    @abstractmethod
-    def shoot(self, other_player, game_over: bool, shot_taken: bool) -> tuple[bool, bool, bool]:
-        """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
-               В зависимости от событий, она обновляет состояние игры"""
-
-    def process_destroyed_ship(self, pos: int, other_player, diagonal_only: bool) -> None:
-        """
-        Обрабатывает процесс уничтожения корабля
-        """
-        ship = sorted(other_player.ship_manager.ships[pos])
-        for ind in range(-1, 1):
-            self.update_dotted_and_hit(ship[ind], diagonal_only)
-        # Drawer().draw_ship(other_player.drawer.ships[pos], 0)
-
-
-def handle_mouse_event(event: pygame.event) -> Point or None:
-    """Обрабатывает события мыши для хода игрока."""
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        x_coordinate, y_coordinate = event.pos
-        if (my_space.MIN_X <= x_coordinate <= my_space.MAX_X and
-                my_space.MIN_Y <= y_coordinate <= my_space.MAX_Y):
-            if ((my_space.LEFT_MARGIN < x_coordinate < my_space.LEFT_MARGIN +
-                 my_space.GRID_SIZE * my_space.BLOCK_SIZE) and
-                    (my_space.UP_MARGIN < y_coordinate < my_space.UP_MARGIN +
-                     my_space.GRID_SIZE * my_space.BLOCK_SIZE)):
-                return Point((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
-                             (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
-    return None
 
 
 class HumanPlayer(Player):
@@ -61,8 +13,7 @@ class HumanPlayer(Player):
         super().__init__(name, offset)
         self.destroyed_ships = list[List[Point]]()
 
-    def update_dotted_and_hit(self, shot_coordinates: Point,
-                              diagonal_only: bool) -> None:
+    def update_dotted_and_hit(self, shot_coordinates: Point, diagonal_only: bool) -> None:
         """Эта процедура добавляет точки вокруг клетки, в которую был произведен выстрел"""
         fire_x_coordinate, fire_y_coordinate = shot_coordinates
         min_x, max_x = 0, my_space.GRID_LIMIT
@@ -75,14 +26,14 @@ class HumanPlayer(Player):
                                           fire_y_coordinate + add_y_coordinate))
         self.dotted -= self.hit_blocks
 
-    def shoot(self, other_player: Player, game_over: bool, shot_taken: bool) \
-            -> tuple[bool, bool, bool]:
+    def shoot_gui_version(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
         other_turn = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True, True, shot_taken
+                pygame.quit()
+                exit(0)
             shot_coordinates = handle_mouse_event(event)
             if shot_coordinates is not None:
                 shot_taken = False
@@ -94,7 +45,21 @@ class HumanPlayer(Player):
                         shot_taken = True
                 if not shot_taken:
                     other_turn = not self.__check_is_successful_hit(shot_coordinates, other_player)
-        return game_over, other_turn, shot_taken
+        return other_turn, shot_taken
+
+    def shoot(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
+        """Выполняет выстрел от имени игрока"""
+        if my_space.IS_PYGAME_INIT:
+            return self.shoot_gui_version(other_player, shot_taken)
+        destroyed = len(self.destroyed_ships)
+        answer = self.__check_is_successful_hit(get_coordinates_from_console(self), other_player)
+        if len(self.destroyed_ships) > destroyed:
+            print("Убил!")
+        elif answer:
+            print("Попал")
+        else:
+            print("Промах")
+        return answer, True
 
     def __check_is_successful_hit(self, shoot: Point, other_player: Player) -> bool:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
@@ -110,6 +75,7 @@ class HumanPlayer(Player):
                 other_player.injured.add(shoot)
                 if not ship:
                     self.process_destroyed_ship(position, other_player, False)
+                    other_player.missed |= self.dotted
                     # print(type(other_player.drawer.ships[position][0]))
                     self.destroyed_ships.append(other_player.ship_manager.ships[position])
                 return True
@@ -117,3 +83,18 @@ class HumanPlayer(Player):
         other_player.missed.add(shoot)
         self.dotted.add(shoot)
         return False
+
+
+def handle_mouse_event(event: pygame.event) -> Point or None:
+    """Обрабатывает события мыши для хода игрока."""
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        x_coordinate, y_coordinate = event.pos
+        if (my_space.MIN_X <= x_coordinate <= my_space.MAX_X and
+                my_space.MIN_Y <= y_coordinate <= my_space.MAX_Y):
+            if ((my_space.LEFT_MARGIN < x_coordinate < my_space.LEFT_MARGIN +
+                 my_space.GRID_SIZE * my_space.BLOCK_SIZE) and
+                    (my_space.UP_MARGIN < y_coordinate < my_space.UP_MARGIN +
+                     my_space.GRID_SIZE * my_space.BLOCK_SIZE)):
+                return Point((x_coordinate - my_space.LEFT_MARGIN) // my_space.BLOCK_SIZE + 1,
+                             (y_coordinate - my_space.UP_MARGIN) // my_space.BLOCK_SIZE + 1)
+    return None

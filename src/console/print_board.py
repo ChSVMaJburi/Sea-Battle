@@ -1,7 +1,7 @@
 """Файл для вывода доски"""
 import src.global_variables as my_space
-from src.console.support_functions import ask_question
-from src.modules.players import Player
+from src.console.message_functions import ask_question
+from src.modules.player_class import Player
 from src.modules.ship_manager import Point
 
 
@@ -29,14 +29,26 @@ def print_corner(enter: str) -> None:
             print("──", end="")
 
 
-def GetSymbol(player: Player, coordinate: Point, showing_ship: bool) -> chr:
+def get_symbol(player: Player, coordinate: Point, showing_ship: bool) -> chr:
     """Выдаёт нужный символ для вывода"""
+    if not showing_ship:
+        exist = False
+        for ship in player.ship_manager.ships:
+            if coordinate in ship:
+                exist = True
+                for other_ship in player.ship_manager.ships_copy:
+                    if len(other_ship) > 0 and other_ship[0] in ship:
+                        exist = False
+                        break
+                break
+        if exist:
+            return '□'
     if coordinate in player.injured:
         return 'X'
     if coordinate in player.missed:
         return '*'
     if showing_ship:
-        for ship in player.ship_manager.ships_copy:
+        for ship in player.ship_manager.ships:
             if coordinate in ship:
                 return '□'
     return ' '
@@ -51,7 +63,8 @@ def print_num_in_corner(player: Player, row: int, enter: str, showing_ship: bool
             else:
                 print("│", end=enter)
         else:
-            print(f" {GetSymbol(player, Point(row // 2 + 1, column // 2 + 1), showing_ship)} ", end="")
+            print(f" {get_symbol(player, Point(row // 2 + 1, column // 2 + 1), showing_ship)} ",
+                  end="")
 
 
 def make_distance() -> None:
@@ -105,10 +118,11 @@ def show_board(player: Player, showing_ship: bool) -> None:
     print_letters()
     print()
     for row in range(my_space.GRID_SIZE * 2 + 1):
-        print_num(row + 1)
         if row % 2 == 0:
+            print("   ", end='')
             print_corner("\n")
         else:
+            print_num((row + 1) // 2)
             print_num_in_corner(player, row, "\n", showing_ship)
 
 
