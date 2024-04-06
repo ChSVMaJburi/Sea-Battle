@@ -28,7 +28,7 @@
 
 ---
 
-    git clone https://github.com/asliddin03/TP_Sea_Battle.git
+    git clone git@gitlab.akhcheck.ru:Aminov_Sh/TP_Sea_Battle.git
 
 Установите нужные библиотеки
 
