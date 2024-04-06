@@ -1,15 +1,23 @@
 # [Mорской Бой](<https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D1%80%D1%81%D0%BA%D0%BE%D0%B9_%D0%B1%D0%BE%D0%B9_(%D0%B8%D0%B3%D1%80%D0%B0)>)
 
-Основа проекта в восьми файлах:
+На выбор: графический и консольный интерфейс
 
-- **main.py**(главный файл)
-- **Grid.py**(класс для сетки)
-- **global_variable.py**(глобальные переменные)
-- **button.py**(кнопки)
-- **drawer.py**(рисует корабли и тд)
-- **interface.py**(механика игры, вывод сообщений)
-- **game_logic.py**(вспомогательная логика игры)
-- **dotted_and_hit.py**(вспомогательная функция)<br>
+Основа проекта в 13 файлах:
+
+- **[main.py](main.py)** - главный файл
+- **[console_interface.py](src%2Fconsole%2Fconsole_interface.py)** - файл с функцией реализующей консольный интерфейс
+- **[print_board.py](src%2Fconsole%2Fprint_board.py)** - файл с функциями для разного вида вывода игрового поля в консоль
+- **[message_functions.py](src%2Fconsole%2Fmessage_functions.py)** - файл с функциями для контакта с пользователем
+- **[button.py](src%2FGUI%2Fbutton.py)** - файл с классом для отображения кнопок в графическом интерфейсе
+- **[grid_class.py](src%2FGUI%2Fgrid_class.py)** - файл с классом для отображения игровой сетки в графическом интерфейсе
+- **[gui_drawer.py](src%2FGUI%2Fgui_drawer.py)** - файл с классом для отображения графических деталей
+- **[gui_interface.py](src%2FGUI%2Fgui_interface.py)** - файл с функцией реализующей графический интерфейс
+- **[computer.py](src%2Fmodules%2Fcomputer.py)** - файл с реализацией класса для управления компьютером
+- **[human.py](src%2Fmodules%2Fhuman.py))** - файл с реализацией класса для управления человеком
+- **[player_class.py](src%2Fmodules%2Fplayer_class.py)** - файл с реализацией виртуального класса Player
+- **[ship_manager.py](src%2Fmodules%2Fship_manager.py)** - файл с реализацией класса для управления кораблями
+- **[global_variables.py](src%2Fglobal_variables.py)** - файл с глобальными и константными значениями 
+<br>
   Используются библиотеки [pygame](https://www.pygame.org/docs/), [random](https://docs.python.org/3/library/random.html), [copy](https://docs.python.org/3/library/copy.html), [asyncio](https://docs.python.org/3/library/asyncio.html)
 
 ---
@@ -35,6 +43,7 @@
     python3 main.py
 
 ---
+# Графический интерфейс
 
 Игра запускается нажатием кнопки **START GAME**,
 ![Кнопка start](Picturec/start.jpg)
@@ -55,7 +64,7 @@
 
 __Нужные команды для клонирования репозитория и установки необходимых файлов__
 ***
-    git clone -b dev https://github.com/asliddin03/Python.git
+    git clone git@gitlab.akhcheck.ru:Aminov_Sh/TP_Sea_Battle.git
     pip install -r requirements.txt
 
 __Установка python и дополнительного пакета__
