@@ -14,6 +14,9 @@ class Grid(Drawer):
         """
         self.title = title
         self.offset = offset
+
+    def start_drawing(self) -> None:
+        """Публичный метод, чтобы начать рисовать сетку"""
         self.__draw_grid()
         self.__add_nums_letters()
         self.__sign()

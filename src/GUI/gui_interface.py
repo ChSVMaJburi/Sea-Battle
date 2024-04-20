@@ -35,8 +35,10 @@ def play_gui_type() -> None:
     pygame.init()
     start_game_position = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
     start_button = Button(start_game_position, 0, "START GAME")
-    Grid("HUMAN", 0)
-    Grid("COMPUTER", my_space.DISTANCE)
+    grids = (Grid("HUMAN", 0), Grid("COMPUTER", my_space.DISTANCE))
+    grids[0].start_drawing()
+    grids[1].start_drawing()
+
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     Drawer.draw_ship(human.ship_manager.ships, computer.offset)
