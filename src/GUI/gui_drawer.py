@@ -9,8 +9,8 @@ class Drawer:
     """Рисовальщик, рисует на поле нужные знаки, фигуры"""
 
     @staticmethod
-    def draw_ship(ships_coord_list: List[Tuple[Point, Point]],
-                  offset: int) -> None:
+    def draw_rectangles(ships_coord_list: List[Tuple[Point, Point]],
+                        offset: int) -> None:
         """
          Рисует прямоугольники вокруг блоков, занятых кораблем
          Аргументы:
