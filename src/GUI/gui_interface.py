@@ -42,7 +42,6 @@ def play_gui_type() -> None:
     human = HumanPlayer("HUMAN", 0)
     computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
     Drawer.draw_rectangles(human.ship_manager.ships, computer.offset)
-    # Drawer.draw_ship(computer.drawer.ships, human.offset)
     turn_two = False
     shot_taken, game_over = display_the_start_screen(False, start_button)
     while not game_over:
@@ -56,11 +55,11 @@ def play_gui_type() -> None:
         Drawer.draw_rectangles(human.destroyed_ships, human.offset)
         if not computer.ship_manager.ships_set:
             show_message(
-                "YOU WIN!", (0, 300, my_space.SIZE[0], my_space.SIZE[1]))
+                "YOU WIN!", my_space.WIN_RECTANGLE)
             game_over = True
         if not human.ship_manager.ships_set:
             show_message(
-                "YOU LOSE!", (0, 0, my_space.SIZE[0], my_space.SIZE[1]))
+                "YOU LOSE!", my_space.LOSE_RECTANGLE)
             game_over = True
             Drawer.draw_rectangles(computer.ship_manager.ships, human.offset)
         pygame.display.update()
