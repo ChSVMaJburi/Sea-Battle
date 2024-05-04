@@ -37,7 +37,8 @@ class ComputerPlayer(Player):
         self.available_to_fire_set.discard(computer_fired)
         print(f"Компьютер решил выстрелить в "
               f"{chr(computer_fired[1] - 1 + ord('A')), computer_fired[0]}")
-        is_hit = self.check_is_successful_hit(computer_fired, other_player)
+        is_hit, is_destroyed = other_player.check_is_successful_hit(computer_fired)
+        self.process_after_shoot(computer_fired, is_hit, is_destroyed)
         if is_hit:
             self.need_to_fire.clear()
         update_around_comp_hit(computer_fired, is_hit, self)

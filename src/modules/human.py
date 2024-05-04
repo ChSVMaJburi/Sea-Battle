@@ -27,22 +27,25 @@ class HumanPlayer(Player):
                     if dot == shot_coordinates:
                         shoot_taken = True
                 if not shoot_taken:
-                    other_turn = not self.check_is_successful_hit(shot_coordinates, other_player)
+                    is_hit, is_destroyed = other_player.check_is_successful_hit(shot_coordinates)
+                    self.process_after_shoot(shot_coordinates, is_hit, is_destroyed)
+                    other_turn = not is_hit
         return other_turn
 
     def shoot(self, other_player: Player) -> bool:
         """Выполняет выстрел от имени игрока"""
         if my_space.IS_PYGAME_INIT:
             return self.shoot_gui_version(other_player)
-        destroyed = len(self.destroyed_ships)
-        answer = self.check_is_successful_hit(get_coordinates_from_console(self), other_player)
-        if len(self.destroyed_ships) > destroyed:
+        shoot = get_coordinates_from_console(self)
+        is_hit, is_destroyed = other_player.check_is_successful_hit(shoot)
+        self.process_after_shoot(shoot, is_hit, is_destroyed)
+        if is_destroyed:
             print("Убил!")
-        elif answer:
+        elif is_hit:
             print("Попал")
         else:
             print("Промах")
-        return answer
+        return is_hit
 
 
 def handle_mouse_event(event: pygame.event) -> Point or None:

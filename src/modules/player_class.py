@@ -1,4 +1,5 @@
 """Реализуем классы Player, HumanPlayer"""
+import copy
 from abc import ABC, abstractmethod
 from typing import Tuple
 from src.GUI.gui_drawer import Point
@@ -39,45 +40,37 @@ class Player(ABC):
                                                   fire_y_coordinate + add_y_coordinate))
         self.dotted -= self.hit_blocks
 
-    def check_is_successful_hit(self, shoot: Point, other_player: 'Player') -> bool:
+    def process_after_shoot(self, shoot: Point, is_hit: bool, is_destroyed: bool) -> None:
+        if not is_hit:
+            self.dotted.add(Point(shoot[0] + self.offset, shoot[1]))
+            self.dotted_to_shot.add(shoot)
+        elif not is_destroyed:
+            self.update_dotted_and_hit(shoot, True)
+            self.last_hits.append(shoot)
+        else:
+            self.last_hits.append(shoot)
+            for ind in range(-1, 1):
+                self.update_dotted_and_hit(self.last_hits[ind], False)
+            self.destroyed_ships.append(copy.deepcopy(self.last_hits))
+            self.last_hits.clear()
+
+    def check_is_successful_hit(self, shoot: Point) -> Tuple[bool, bool]:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
-        for ship in other_player.ship_manager.ships_copy:
+        for ship in self.ship_manager.ships_copy:
             if shoot in ship:
-                self.update_dotted_and_hit(shoot, True)
-                position = other_player.ship_manager.ships_copy.index(ship)
-                if len(ship) == 1:
-                    self.update_dotted_and_hit(shoot, True)
                 ship.remove(shoot)
-                self.last_hits.append(shoot)
-                other_player.ship_manager.ships_set.discard(shoot)
-                other_player.injured.add(shoot)
+                self.ship_manager.ships_set.discard(shoot)
+                self.injured.add(shoot)
+                destroyed = False
                 if not ship:
-                    # print("deleting")
-                    self.process_destroyed_ship(position, other_player, False)
-                    other_player.missed |= self.dotted
-                    for coordinate in self.dotted:
-                        other_player.missed.add(
-                            Point(coordinate[0] - self.offset, coordinate[1]))
-                    self.destroyed_ships.append(other_player.ship_manager.ships[position])
-                    self.last_hits.clear()
-                return True
+                    destroyed = True
+                return True, destroyed
 
-        other_player.missed.add(shoot)
-        self.dotted.add(Point(shoot[0] + self.offset, shoot[1]))
-        self.dotted_to_shot.add(shoot)
-        return False
+        self.missed.add(shoot)
+        return False, False
 
     @abstractmethod
     def shoot(self, other_player) -> bool:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
-
-    def process_destroyed_ship(self, pos: int, other_player, diagonal_only: bool) -> None:
-        """
-        Обрабатывает процесс уничтожения корабля
-        """
-        ship = sorted(other_player.ship_manager.ships[pos])
-        for ind in range(-1, 1):
-            self.update_dotted_and_hit(ship[ind], diagonal_only)
-        # Drawer().draw_ship(other_player.drawer.ships[pos], 0)

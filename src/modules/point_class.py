@@ -18,7 +18,7 @@ class Point:
         return iter(self.coordinate)
 
     def __repr__(self) -> str:
-        return f"{self.coordinate[0]} {self.coordinate[1]}"
+        return f"({self.coordinate[0]}, {self.coordinate[1]})"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Point):
