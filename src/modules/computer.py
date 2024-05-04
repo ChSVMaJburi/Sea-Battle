@@ -1,6 +1,6 @@
 """В этом модуле реализуется ComputerPlayer и вспомогательные для неё функции и процедуры"""
 import random
-from typing import Set, Tuple
+from typing import Set
 
 import pygame
 from src.modules.player_class import Player
@@ -20,15 +20,14 @@ class ComputerPlayer(Player):
             range(1, my_space.GRID_LIMIT))
         # print(sorted(self.available_to_fire_set), sep="\n")
 
-    def shoot(self, other_player: Player) -> bool:
+    def shoot(self) -> Point:
         """Стреляет от имени компьютера"""
         if self.need_to_fire:
-            is_hit = self.__random_shoot(self.need_to_fire, other_player)
+            return self.__random_shoot(self.need_to_fire)
         else:
-            is_hit = self.__random_shoot(self.available_to_fire_set, other_player)
-        return is_hit
+            return self.__random_shoot(self.available_to_fire_set)
 
-    def __random_shoot(self, set_to_shot: Set[Point], other_player: Player) -> bool:
+    def __random_shoot(self, set_to_shot: Set[Point]) -> Point:
         """
         Случайным образом выбирает блок из доступных для стрельбы из набора и возвращает hit_or_miss
         """
@@ -37,12 +36,7 @@ class ComputerPlayer(Player):
         self.available_to_fire_set.discard(computer_fired)
         print(f"Компьютер решил выстрелить в "
               f"{chr(computer_fired[1] - 1 + ord('A')), computer_fired[0]}")
-        is_hit, is_destroyed = other_player.check_is_successful_hit(computer_fired)
-        self.process_after_shoot(computer_fired, is_hit, is_destroyed)
-        if is_hit:
-            self.need_to_fire.clear()
-        update_around_comp_hit(computer_fired, is_hit, self)
-        return is_hit
+        return computer_fired
 
 
 def update_around_comp_hit(shot_coordinates: Point, computer_hits: bool,

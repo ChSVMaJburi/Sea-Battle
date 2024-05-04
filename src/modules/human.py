@@ -9,43 +9,31 @@ from .. import global_variables as my_space
 class HumanPlayer(Player):
     """Реализуем класс HumanPlayer"""
 
-    def shoot_gui_version(self, other_player: Player) -> bool:
+    def shoot_gui_version(self) -> Point:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
-        other_turn = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit(0)
-            shot_coordinates = handle_mouse_event(event)
-            if shot_coordinates is not None:
+            shoot_coordinates = handle_mouse_event(event)
+            if shoot_coordinates is not None:
                 shoot_taken = False
                 for hit_block in self.hit_blocks:
-                    if hit_block == shot_coordinates:
+                    if hit_block == shoot_coordinates:
                         shoot_taken = True
                 for dot in self.dotted:
-                    if dot == shot_coordinates:
+                    if dot == shoot_coordinates:
                         shoot_taken = True
                 if not shoot_taken:
-                    is_hit, is_destroyed = other_player.check_is_successful_hit(shot_coordinates)
-                    self.process_after_shoot(shot_coordinates, is_hit, is_destroyed)
-                    other_turn = not is_hit
-        return other_turn
+                    return shoot_coordinates
 
-    def shoot(self, other_player: Player) -> bool:
+    def shoot(self) -> Point:
         """Выполняет выстрел от имени игрока"""
         if my_space.IS_PYGAME_INIT:
-            return self.shoot_gui_version(other_player)
+            return self.shoot_gui_version()
         shoot = get_coordinates_from_console(self)
-        is_hit, is_destroyed = other_player.check_is_successful_hit(shoot)
-        self.process_after_shoot(shoot, is_hit, is_destroyed)
-        if is_destroyed:
-            print("Убил!")
-        elif is_hit:
-            print("Попал")
-        else:
-            print("Промах")
-        return is_hit
+        return shoot
 
 
 def handle_mouse_event(event: pygame.event) -> Point or None:

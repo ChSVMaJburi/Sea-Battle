@@ -5,7 +5,7 @@ import src.global_variables as my_space
 from src.GUI.gui_drawer import Drawer
 from src.GUI.grid_class import Grid
 from src.modules.human import HumanPlayer
-from src.modules.computer import ComputerPlayer
+from src.modules.computer import ComputerPlayer, update_around_comp_hit
 
 
 def main_menu():
@@ -67,12 +67,21 @@ def play_gui_type() -> None:
     other_player = ComputerPlayer(my_space.DISTANCE)
     Drawer.draw_rectangles(you.ship_manager.ships, other_player.offset)
     # Drawer.draw_rectangles(other_player.ship_manager.ships, you.offset)
-    turn_two, game_over = False, False
+    another_turn, game_over = False, False
     while not game_over:
-        if turn_two:
-            turn_two = other_player.shoot(you)
+        if another_turn:
+            to_shooting = other_player.shoot()
+            another_turn, is_destroyed = you.check_is_successful_hit(to_shooting)
+            other_player.process_after_shoot(to_shooting, another_turn, is_destroyed)
+            if another_turn:
+                other_player.need_to_fire.clear()
+            update_around_comp_hit(to_shooting, another_turn, other_player)
         else:
-            turn_two = you.shoot(other_player)
+            to_shooting = you.shoot()
+            if to_shooting:
+                another_turn, is_destroyed = other_player.check_is_successful_hit(to_shooting)
+                you.process_after_shoot(to_shooting, another_turn, is_destroyed)
+                another_turn = not another_turn
 
         Drawer.draw_dots(you.dotted | other_player.dotted)
         Drawer.draw_hit_blocks(you.hit_blocks | other_player.hit_blocks)

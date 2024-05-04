@@ -55,23 +55,23 @@ class Player(ABC):
             self.destroyed_ships.append(copy.deepcopy(self.last_hits))
             self.last_hits.clear()
 
-    def check_is_successful_hit(self, shoot: Point) -> Tuple[bool, bool]:
+    def check_is_successful_hit(self, to_shooting: Point) -> Tuple[bool, bool]:
         """Проверяет попадание в корабль противника и выполняет соответствующие действия.
         Возвращает True при попадании, иначе False."""
         for ship in self.ship_manager.ships_copy:
-            if shoot in ship:
-                ship.remove(shoot)
-                self.ship_manager.ships_set.discard(shoot)
-                self.injured.add(shoot)
+            if to_shooting in ship:
+                ship.remove(to_shooting)
+                self.ship_manager.ships_set.discard(to_shooting)
+                self.injured.add(to_shooting)
                 destroyed = False
                 if not ship:
                     destroyed = True
                 return True, destroyed
 
-        self.missed.add(shoot)
+        self.missed.add(to_shooting)
         return False, False
 
     @abstractmethod
-    def shoot(self, other_player) -> bool:
+    def shoot(self) -> Point:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
