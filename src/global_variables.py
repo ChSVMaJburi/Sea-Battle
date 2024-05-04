@@ -1,6 +1,4 @@
 """Модуль для глобальных значений"""
-import pygame
-
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 180, 180)
@@ -14,10 +12,10 @@ UP_MARGIN = 80
 SIZE = (LEFT_MARGIN + 27 * BLOCK_SIZE, UP_MARGIN + 15 * BLOCK_SIZE)
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
-screen: pygame.surface.Surface
+screen: None
 FONT_SIZE: int
-FONT: pygame.font.Font
-GAME_OVER: pygame.font.Font
+FONT: None
+GAME_OVER: None
 
 DISTANCE = 15
 GRID_SIZE = 10
