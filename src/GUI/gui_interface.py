@@ -59,33 +59,33 @@ def play_gui_type() -> None:
     """Запускает игровой цикл"""
     pygame.init()
     main_menu()
-    grids = (Grid("YOU", 0), Grid("YOU", my_space.DISTANCE))
+    grids = (Grid("YOU", 0), Grid("OTHER PLAYER", my_space.DISTANCE))
     grids[0].start_drawing()
     grids[1].start_drawing()
 
-    human = HumanPlayer(0)
-    computer = ComputerPlayer(my_space.DISTANCE)
-    Drawer.draw_rectangles(human.ship_manager.ships, computer.offset)
-    # Drawer.draw_rectangles(computer.ship_manager.ships, human.offset)
+    you = HumanPlayer(0)
+    other_player = ComputerPlayer(my_space.DISTANCE)
+    Drawer.draw_rectangles(you.ship_manager.ships, other_player.offset)
+    # Drawer.draw_rectangles(other_player.ship_manager.ships, you.offset)
     turn_two, game_over = False, False
     while not game_over:
         if turn_two:
-            turn_two = computer.shoot(human)
+            turn_two = other_player.shoot(you)
         else:
-            turn_two = human.shoot(computer)
+            turn_two = you.shoot(other_player)
 
-        Drawer.draw_dots(human.dotted | computer.dotted)
-        Drawer.draw_hit_blocks(human.hit_blocks | computer.hit_blocks)
-        Drawer.draw_rectangles(human.destroyed_ships, human.offset)
-        if not computer.ship_manager.ships_set:
+        Drawer.draw_dots(you.dotted | other_player.dotted)
+        Drawer.draw_hit_blocks(you.hit_blocks | other_player.hit_blocks)
+        Drawer.draw_rectangles(you.destroyed_ships, you.offset)
+        if not other_player.ship_manager.ships_set:
             show_message(
                 "YOU WIN!", my_space.END_RECTANGLE)
             game_over = True
-        if not human.ship_manager.ships_set:
+        if not you.ship_manager.ships_set:
             show_message(
                 "YOU LOSE!", my_space.END_RECTANGLE)
             game_over = True
-            Drawer.draw_rectangles(computer.ship_manager.ships, human.offset)
+            Drawer.draw_rectangles(other_player.ship_manager.ships, you.offset)
         pygame.display.update()
     check_restart()
 

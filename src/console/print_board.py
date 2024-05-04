@@ -89,9 +89,9 @@ def print_num(number: int) -> None:
 
 def show_horizontal(first: Player, second: Player) -> None:
     """Выводит доски горизонтально"""
-    first_size = len(first.name)
+    first_size = len("You")
     print("    ", end="")
-    print(first.name, second.name,
+    print("You", "Other player",
           sep=" " * (my_space.REAL_DISTANCE - first_size), end="\n   ")
     print_letters()
     make_distance()
@@ -114,7 +114,7 @@ def show_horizontal(first: Player, second: Player) -> None:
 
 def show_board(player: Player, showing_ship: bool) -> None:
     """Выводит одну доску"""
-    print(" " * my_space.DISTANCE, player.name, end="\n   ")
+    print(" " * my_space.DISTANCE, "you", end="\n   ")
     print_letters()
     print()
     for row in range(my_space.GRID_SIZE * 2 + 1):

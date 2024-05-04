@@ -1,8 +1,9 @@
+"""Модуль с реализацией ShipManager"""
 import copy
 import random
 from typing import Set, List
-from src.modules.point_class import Point
-import src.global_variables as my_space
+from ..modules.point_class import Point
+from .. import global_variables as my_space
 
 
 class ShipManager:

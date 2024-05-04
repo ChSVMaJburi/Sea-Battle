@@ -1,16 +1,13 @@
-from typing import Tuple
+"""Модуль с реализацией HumanPlayer"""
 import pygame
-from src.console.message_functions import get_coordinates_from_console
-from src.modules.player_class import Player
-from src.modules.ship_manager import Point
-import src.global_variables as my_space
+from ..console.message_functions import get_coordinates_from_console
+from ..modules.player_class import Player
+from ..modules.ship_manager import Point
+from .. import global_variables as my_space
 
 
 class HumanPlayer(Player):
     """Реализуем класс HumanPlayer"""
-
-    def __init__(self, offset: int):
-        super().__init__(offset)
 
     def shoot_gui_version(self, other_player: Player) -> bool:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.

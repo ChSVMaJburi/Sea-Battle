@@ -3,32 +3,28 @@ import src.global_variables as my_space
 from src.modules.human import HumanPlayer
 from src.modules.computer import ComputerPlayer
 from src.console.print_board import print_board
-from src.console.message_functions import say_goodbye
-
-
-# from src.console.console_drawer import ConsoleBoard
 
 
 def play_console_type():
     """Запускает игровой цикл"""
     print("Приветствую в консольной версии :)")
-    human = HumanPlayer("HUMAN", 0)
-    computer = ComputerPlayer("COMPUTER", my_space.DISTANCE)
+    you = HumanPlayer(0)
+    other_player = ComputerPlayer(my_space.DISTANCE)
     turn_two = False
-    print_board(human, computer)
+    print_board(you, other_player)
     while True:
         if not turn_two:
-            is_success, _ = human.shoot(computer, True)
+            is_success = you.shoot(other_player)
         else:
-            is_success, _ = computer.shoot(human, True)
+            is_success = other_player.shoot(you)
         if ((turn_two and not is_success) or (not turn_two and is_success) or
-                not human.ship_manager.ships_set or not computer.ship_manager.ships_set):
-            print_board(human, computer)
+                not you.ship_manager.ships_set or not other_player.ship_manager.ships_set):
+            print_board(you, other_player)
         if not is_success:
             turn_two ^= 1
-        if not human.ship_manager.ships_set:
-            say_goodbye(computer)
+        if not you.ship_manager.ships_set:
+            print("Вы проиграли")
             return
-        if not computer.ship_manager.ships_set:
-            say_goodbye(human)
+        if not other_player.ship_manager.ships_set:
+            print("Вы выиграли")
             return
