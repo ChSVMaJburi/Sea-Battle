@@ -41,6 +41,7 @@ class Player(ABC):
         self.dotted -= self.hit_blocks
 
     def process_after_shoot(self, shoot: Point, is_hit: bool, is_destroyed: bool) -> None:
+        """Проводит все нужные изменения после выстрела"""
         if not is_hit:
             self.dotted.add(Point(shoot[0] + self.offset, shoot[1]))
             self.dotted_to_shot.add(shoot)
