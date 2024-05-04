@@ -9,8 +9,7 @@ import src.global_variables as my_space
 class Player(ABC):
     """Реализуем класс Player"""
 
-    def __init__(self, name: str, offset: int):
-        self.name = name
+    def __init__(self, offset: int):
         self.offset = offset
         self.ship_manager = ShipManager()
         self.hit_blocks = set[Point]()
@@ -70,7 +69,7 @@ class Player(ABC):
         return False
 
     @abstractmethod
-    def shoot(self, other_player, shot_taken: bool) -> Tuple[bool, bool]:
+    def shoot(self, other_player) -> bool:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
 

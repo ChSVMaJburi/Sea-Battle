@@ -9,10 +9,10 @@ import src.global_variables as my_space
 class HumanPlayer(Player):
     """Реализуем класс HumanPlayer"""
 
-    def __init__(self, name: str, offset: int):
-        super().__init__(name, offset)
+    def __init__(self, offset: int):
+        super().__init__(offset)
 
-    def shoot_gui_version(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
+    def shoot_gui_version(self, other_player: Player) -> bool:
         """Обрабатывает события мыши для игрового поля и определяет, чей сейчас ход.
                В зависимости от событий, она обновляет состояние игры"""
         other_turn = False
@@ -22,21 +22,21 @@ class HumanPlayer(Player):
                 exit(0)
             shot_coordinates = handle_mouse_event(event)
             if shot_coordinates is not None:
-                shot_taken = False
+                shoot_taken = False
                 for hit_block in self.hit_blocks:
                     if hit_block == shot_coordinates:
-                        shot_taken = True
+                        shoot_taken = True
                 for dot in self.dotted:
                     if dot == shot_coordinates:
-                        shot_taken = True
-                if not shot_taken:
+                        shoot_taken = True
+                if not shoot_taken:
                     other_turn = not self.check_is_successful_hit(shot_coordinates, other_player)
-        return other_turn, shot_taken
+        return other_turn
 
-    def shoot(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
+    def shoot(self, other_player: Player) -> bool:
         """Выполняет выстрел от имени игрока"""
         if my_space.IS_PYGAME_INIT:
-            return self.shoot_gui_version(other_player, shot_taken)
+            return self.shoot_gui_version(other_player)
         destroyed = len(self.destroyed_ships)
         answer = self.check_is_successful_hit(get_coordinates_from_console(self), other_player)
         if len(self.destroyed_ships) > destroyed:
@@ -45,7 +45,7 @@ class HumanPlayer(Player):
             print("Попал")
         else:
             print("Промах")
-        return answer, True
+        return answer
 
 
 def handle_mouse_event(event: pygame.event) -> Point or None:

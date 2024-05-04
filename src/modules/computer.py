@@ -11,8 +11,8 @@ from src.GUI.gui_drawer import Point
 class ComputerPlayer(Player):
     """Реализуем ComputerPlayer"""
 
-    def __init__(self, name: str, offset: int):
-        super().__init__(name, offset)
+    def __init__(self, offset: int):
+        super().__init__(offset)
         self.need_to_fire = set[Point]()
         self.horizontal = -1
         self.available_to_fire_set = set[Point](
@@ -20,13 +20,13 @@ class ComputerPlayer(Player):
             range(1, my_space.GRID_LIMIT))
         # print(sorted(self.available_to_fire_set), sep="\n")
 
-    def shoot(self, other_player: Player, shot_taken: bool) -> Tuple[bool, bool]:
+    def shoot(self, other_player: Player) -> bool:
         """Стреляет от имени компьютера"""
         if self.need_to_fire:
             is_hit = self.__random_shoot(self.need_to_fire, other_player)
         else:
             is_hit = self.__random_shoot(self.available_to_fire_set, other_player)
-        return is_hit, True
+        return is_hit
 
     def __random_shoot(self, set_to_shot: Set[Point], other_player: Player) -> bool:
         """
