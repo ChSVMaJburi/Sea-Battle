@@ -1,27 +1,34 @@
 """Основной цикл игры и вспомогательные функции"""
+from typing import Tuple
+
 import pygame
 from src.GUI.button import Button
 import src.global_variables as my_space
 from src.GUI.gui_drawer import Drawer
 from src.GUI.grid_class import Grid
+from src.GUI.text_manager import TextManager
 from src.modules.human import HumanPlayer
 from src.modules.computer import ComputerPlayer, update_around_comp_hit
+from src.modules.player_class import Player
 
 
-def main_menu():
+def update_all_buttons(buttons: list[Button]):
+    for button in buttons:
+        button.draw_button()
+        button.change_color_on_hover()
+
+
+def main_menu() -> bool:
     """"Создает кнопки, рисует их на экране и обрабатывает события мыши"""
-    start_game_position = my_space.LEFT_MARGIN + (my_space.GRID_SIZE - 2.2) * my_space.BLOCK_SIZE
-    start_button = Button(start_game_position, 0, "START GAME WITH COMPUTER")
-    exit_game_position = my_space.LEFT_MARGIN + my_space.GRID_SIZE * my_space.BLOCK_SIZE
-    exit_button = Button(exit_game_position, 100, "EXIT GAME")
+    with_human_button = Button(my_space.WITH_HUMAN, 0, "START GAME WITH OTHER HUMAN")
+    with_computer_button = Button(my_space.WITH_COMPUTER, 100, "START GAME WITH COMPUTER")
+    exit_button = Button(my_space.EXIT_GAME, 200, "EXIT GAME")
     show_message("Welcome to the Battleship game",
                  my_space.WELCOME_RECTANGLE)
-    shot_taken = True
-    while shot_taken:
-        start_button.draw_button()
-        start_button.change_color_on_hover()
-        exit_button.draw_button()
-        exit_button.change_color_on_hover()
+    shoot_taken = True
+    with_human = False
+    while shoot_taken:
+        update_all_buttons([with_human_button, with_computer_button, exit_button])
         pygame.display.update()
         mouse_position = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -29,10 +36,15 @@ def main_menu():
                     event.type == pygame.MOUSEBUTTONDOWN and exit_button.rect.collidepoint(mouse_position)):
                 exit(0)
             elif (event.type == pygame.MOUSEBUTTONDOWN and
-                  start_button.rect.collidepoint(mouse_position)):
-                shot_taken = False
+                  with_computer_button.rect.collidepoint(mouse_position)):
+                shoot_taken = False
+            elif (event.type == pygame.MOUSEBUTTONDOWN and
+                  with_human_button.rect.collidepoint(mouse_position)):
+                with_human = True
+                shoot_taken = False
         pygame.display.update()
     my_space.screen.fill(my_space.SCREEN_COLOR, my_space.WELCOME_RECTANGLE)
+    return with_human
 
 
 def check_restart():
@@ -58,11 +70,45 @@ def check_restart():
 def play_gui_type() -> None:
     """Запускает игровой цикл"""
     pygame.init()
-    main_menu()
+    with_human = main_menu()
+    if not with_human:
+        play_with_computer()
+        check_restart()
+    else:
+        host, port = get_host_and_port()
+
+
+def get_host_and_port() -> Tuple[str, str]:
+    """Функция для ввода хоста"""
+    entered = False
+    show_message("Enter the IP and Port.", my_space.WELCOME_RECTANGLE)
+    show_message("In IP::PORT format please.", my_space.IP_RECTANGLE)
+    host_text = TextManager("")
+    TextManager("IP::PORT: ").print_to_gui(my_space.BEFORE_INPUT)
+    while not entered:
+        my_space.screen.fill(my_space.SCREEN_COLOR, my_space.INPUT_RECTANGLE)
+        returned = host_text.input_from_gui()
+        if returned and correct_host(host_text.text):
+            pass
+        elif returned:
+            TextManager("Failed").print_to_gui(my_space.INPUT_COORDINATE)
+            host_text.text = ""
+        else:
+            host_text.print_to_gui(my_space.INPUT_COORDINATE)
+        pygame.display.update()
+
+
+def correct_host(text: str) -> bool:
+    """Функция для проверки хоста на корректность"""
+    if len(text.split(":")) != 2:
+        return False
+
+
+def play_with_computer():
+    """Функция для игры против компьютера"""
     grids = (Grid("YOU", 0), Grid("OTHER PLAYER", my_space.DISTANCE))
     grids[0].start_drawing()
     grids[1].start_drawing()
-
     you = HumanPlayer(0)
     other_player = ComputerPlayer(my_space.DISTANCE)
     Drawer.draw_rectangles(you.ship_manager.ships, other_player.offset)
@@ -86,17 +132,20 @@ def play_gui_type() -> None:
         Drawer.draw_dots(you.dotted | other_player.dotted)
         Drawer.draw_hit_blocks(you.hit_blocks | other_player.hit_blocks)
         Drawer.draw_rectangles(you.destroyed_ships, you.offset)
-        if not other_player.ship_manager.ships_set:
-            show_message(
-                "YOU WIN!", my_space.END_RECTANGLE)
-            game_over = True
-        if not you.ship_manager.ships_set:
-            show_message(
-                "YOU LOSE!", my_space.END_RECTANGLE)
-            game_over = True
-            Drawer.draw_rectangles(other_player.ship_manager.ships, you.offset)
+        check_end_game(you, other_player)
         pygame.display.update()
-    check_restart()
+
+
+def check_end_game(first: Player, second: Player):
+    if not second.ship_manager.ships_set:
+        show_message(
+            "YOU WIN!", my_space.END_RECTANGLE)
+        game_over = True
+    if not first.ship_manager.ships_set:
+        show_message(
+            "YOU LOSE!", my_space.END_RECTANGLE)
+        game_over = True
+        Drawer.draw_rectangles(second.ship_manager.ships, first.offset)
 
 
 def show_message(message: str, rectangle: tuple, color=my_space.MESSAGE_COLOR) -> None:
