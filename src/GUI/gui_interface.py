@@ -7,6 +7,7 @@ import src.global_variables as my_space
 from src.GUI.gui_drawer import Drawer
 from src.GUI.grid_class import Grid
 from src.GUI.text_manager import TextManager
+from src.client import correct_host, get_host_and_port, BattleshipClient
 from src.modules.human import HumanPlayer
 from src.modules.computer import ComputerPlayer, update_around_comp_hit
 from src.modules.player_class import Player
@@ -74,34 +75,62 @@ def play_gui_type() -> None:
     if not with_human:
         play_with_computer()
         check_restart()
-    else:
-        host, port = get_host_and_port()
+        return
+    play_with_human()
+    check_restart()
 
 
-def get_host_and_port() -> Tuple[str, str]:
-    """Функция для ввода хоста"""
-    entered = False
+def play_with_human() -> None:
     show_message("Enter the IP and Port.", my_space.WELCOME_RECTANGLE)
-    show_message("In IP::PORT format please.", my_space.IP_RECTANGLE)
-    host_text = TextManager("")
-    TextManager("IP::PORT: ").print_to_gui(my_space.BEFORE_INPUT)
-    while not entered:
-        my_space.screen.fill(my_space.SCREEN_COLOR, my_space.INPUT_RECTANGLE)
-        returned = host_text.input_from_gui()
-        if returned and correct_host(host_text.text):
-            pass
-        elif returned:
-            TextManager("Failed").print_to_gui(my_space.INPUT_COORDINATE)
-            host_text.text = ""
-        else:
-            host_text.print_to_gui(my_space.INPUT_COORDINATE)
-        pygame.display.update()
+    # host, port = get_host_and_port()
+    host, port = ("localhost", 1233)
+    client = BattleshipClient(host, port)
+    try:
+        client.connect()
+        print("ok")
+        my_space.screen.fill(my_space.SCREEN_COLOR, my_space.WELCOME_RECTANGLE)
+        grids = (Grid("YOU", 0), Grid("OTHER PLAYER", my_space.DISTANCE))
+        grids[0].start_drawing()
+        grids[1].start_drawing()
+        you = HumanPlayer(0)
+        Drawer.draw_rectangles(you.ship_manager.ships, my_space.DISTANCE)
+        another_turn, game_over = client.receive_data_from_server(), False
+        while not game_over:
+            print(another_turn, game_over)
+            if another_turn:
+                to_shooting = client.receive_data_from_server()
+                another_turn, is_destroyed = you.check_is_successful_hit(to_shooting)
+                client.send_data_to_server((another_turn, is_destroyed))
+            else:
+                to_shooting = you.shoot()
+                if to_shooting:
+                    client.receive_data_from_server()
+                    another_turn, is_destroyed = client.receive_data_from_server()
+                    you.process_after_shoot(to_shooting, another_turn, is_destroyed)
+                    another_turn = not another_turn
+                else:
+                    pygame.display.update()
+                    continue
+            game_over = update_display(client, you)
+    except KeyboardInterrupt:
+        print("Отключение от сервера.")
+        client.close()
 
 
-def correct_host(text: str) -> bool:
-    """Функция для проверки хоста на корректность"""
-    if len(text.split(":")) != 2:
-        return False
+def update_display(client: BattleshipClient, you: Player) -> bool:
+    """Действия для обновления экрана"""
+    client.send_data_to_server(you.dotted)
+    other_dotted = client.receive_data_from_server()
+    client.send_data_to_server(you.hit_blocks)
+    other_hit_blocks = client.receive_data_from_server()
+    client.send_data_to_server(len(you.ship_manager.ships_set))
+    Drawer.draw_dots(you.dotted | other_dotted)
+    Drawer.draw_hit_blocks(you.hit_blocks | other_hit_blocks)
+    Drawer.draw_rectangles(you.destroyed_ships, you.offset)
+    game_over = check_end_game(len(you.ship_manager.ships_set),
+                               client.receive_data_from_server())
+    pygame.display.update()
+    return game_over
 
 
 def play_with_computer():
@@ -132,20 +161,22 @@ def play_with_computer():
         Drawer.draw_dots(you.dotted | other_player.dotted)
         Drawer.draw_hit_blocks(you.hit_blocks | other_player.hit_blocks)
         Drawer.draw_rectangles(you.destroyed_ships, you.offset)
-        check_end_game(you, other_player)
+        game_over = check_end_game(len(you.ship_manager.ships_set),
+                                   len(other_player.ship_manager.ships_set))
         pygame.display.update()
 
 
-def check_end_game(first: Player, second: Player):
-    if not second.ship_manager.ships_set:
+def check_end_game(first_count: int, second_count: int) -> bool:
+    game_over = False
+    if second_count == 0:
         show_message(
             "YOU WIN!", my_space.END_RECTANGLE)
         game_over = True
-    if not first.ship_manager.ships_set:
+    if first_count == 0:
         show_message(
             "YOU LOSE!", my_space.END_RECTANGLE)
         game_over = True
-        Drawer.draw_rectangles(second.ship_manager.ships, first.offset)
+    return game_over
 
 
 def show_message(message: str, rectangle: tuple, color=my_space.MESSAGE_COLOR) -> None:

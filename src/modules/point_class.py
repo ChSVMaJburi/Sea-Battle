@@ -33,3 +33,9 @@ class Point:
 
     def __is__(self, other: 'Point') -> bool:
         return self == other
+
+    def __getstate__(self):
+        return {'x': self.coordinate[0], 'y': self.coordinate[1]}
+
+    def __setstate__(self, state):
+        self.coordinate = state['x'], state['y']
