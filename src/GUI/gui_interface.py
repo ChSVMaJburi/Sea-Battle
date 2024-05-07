@@ -1,13 +1,15 @@
 """Основной цикл игры и вспомогательные функции"""
-from typing import Tuple
+import copy
+from typing import Tuple, Set
 
+import asyncio
 import pygame
 from src.GUI.button import Button
 import src.global_variables as my_space
 from src.GUI.gui_drawer import Drawer
 from src.GUI.grid_class import Grid
 from src.GUI.text_manager import TextManager
-from src.client import correct_host, get_host_and_port, BattleshipClient
+from src.client import GameClient
 from src.modules.human import HumanPlayer
 from src.modules.computer import ComputerPlayer, update_around_comp_hit
 from src.modules.player_class import Player
@@ -76,17 +78,19 @@ def play_gui_type() -> None:
         play_with_computer()
         check_restart()
         return
-    play_with_human()
+    asyncio.run(play_with_human())
     check_restart()
 
 
-def play_with_human() -> None:
+async def play_with_human() -> None:
     show_message("Enter the IP and Port.", my_space.WELCOME_RECTANGLE)
     # host, port = get_host_and_port()
-    host, port = ("localhost", 1233)
-    client = BattleshipClient(host, port)
+    host, port = "127.0.0.1", 8888
+    client = GameClient(host, port)
+    my_dotted, my_hit_blocks = set(), set()
     try:
-        client.connect()
+        print("ok")
+        await asyncio.create_task(client.connect())
         print("ok")
         my_space.screen.fill(my_space.SCREEN_COLOR, my_space.WELCOME_RECTANGLE)
         grids = (Grid("YOU", 0), Grid("OTHER PLAYER", my_space.DISTANCE))
@@ -94,43 +98,63 @@ def play_with_human() -> None:
         grids[1].start_drawing()
         you = HumanPlayer(0)
         Drawer.draw_rectangles(you.ship_manager.ships, my_space.DISTANCE)
-        another_turn, game_over = client.receive_data_from_server(), False
+        print("ok")
+        another_turn, game_over = await client.receive_data(), False
         while not game_over:
-            print(another_turn, game_over)
             if another_turn:
-                to_shooting = client.receive_data_from_server()
+                to_shooting = await client.receive_data()
+                print(to_shooting, "opponent")
                 another_turn, is_destroyed = you.check_is_successful_hit(to_shooting)
-                client.send_data_to_server((another_turn, is_destroyed))
+                await client.send_data((another_turn, is_destroyed))
             else:
                 to_shooting = you.shoot()
                 if to_shooting:
-                    client.receive_data_from_server()
-                    another_turn, is_destroyed = client.receive_data_from_server()
+                    print(to_shooting, "me")
+                    await client.send_data(to_shooting)
+                    another_turn, is_destroyed = await client.receive_data()
                     you.process_after_shoot(to_shooting, another_turn, is_destroyed)
                     another_turn = not another_turn
                 else:
                     pygame.display.update()
                     continue
-            game_over = update_display(client, you)
+            game_over, my_dotted, my_hit_blocks = await update_display(client, you, my_dotted, my_hit_blocks)
     except KeyboardInterrupt:
         print("Отключение от сервера.")
-        client.close()
+        await client.close()
 
 
-def update_display(client: BattleshipClient, you: Player) -> bool:
+async def update_display(client: GameClient, you: Player, my_last_dotted: Set, my_last_hit_blocks: Set) \
+        -> Tuple[bool, Set, Set]:
     """Действия для обновления экрана"""
-    client.send_data_to_server(you.dotted)
-    other_dotted = client.receive_data_from_server()
-    client.send_data_to_server(you.hit_blocks)
-    other_hit_blocks = client.receive_data_from_server()
-    client.send_data_to_server(len(you.ship_manager.ships_set))
+    print(you.hit_blocks, " --- ", my_last_hit_blocks,
+          len(you.ship_manager.ships_set), "my hits")
+    await client.send_data(you.dotted - my_last_dotted)
+    other_dotted = await client.receive_data()
+    print("dots received", other_dotted)
+    await asyncio.sleep(0.2)
+    await client.send_data(you.hit_blocks - my_last_hit_blocks)
+    other_hit_blocks = await client.receive_data()
+    print("hit_blocks received", other_hit_blocks)
+    await asyncio.sleep(0.2)
+    await client.send_data(len(you.ship_manager.ships_set))
+    other_len = await client.receive_data()
+    print("len received", other_len)
+    my_last_dotted, my_last_hit_blocks = copy.deepcopy(you.dotted), copy.deepcopy(you.hit_blocks)
+
+    for dot in other_dotted:
+        dot.coordinate = \
+            (dot.coordinate[0] + my_space.DISTANCE, dot.coordinate[1])
+    for hit_block in other_hit_blocks:
+        hit_block.coordinate = \
+            (hit_block.coordinate[0] + my_space.DISTANCE, hit_block.coordinate[1])
+
     Drawer.draw_dots(you.dotted | other_dotted)
     Drawer.draw_hit_blocks(you.hit_blocks | other_hit_blocks)
     Drawer.draw_rectangles(you.destroyed_ships, you.offset)
     game_over = check_end_game(len(you.ship_manager.ships_set),
-                               client.receive_data_from_server())
+                               other_len)
     pygame.display.update()
-    return game_over
+    return game_over, my_last_dotted, my_last_hit_blocks
 
 
 def play_with_computer():
