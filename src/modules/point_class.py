@@ -1,5 +1,5 @@
 """Реализация класса Point"""
-from typing import Iterator, Tuple
+from typing import Iterator, Tuple, List
 
 
 class Point:
@@ -14,7 +14,7 @@ class Point:
     def __getitem__(self, index: int) -> int:
         return self.coordinate[index]
 
-    def __iter__(self) -> Iterator[Tuple[int, int]]:
+    def __iter__(self) -> Iterator[int]:
         return iter(self.coordinate)
 
     def __repr__(self) -> str:
@@ -33,3 +33,9 @@ class Point:
 
     def __is__(self, other: 'Point') -> bool:
         return self == other
+
+    def __getstate__(self):
+        return {'x': self.coordinate[0], 'y': self.coordinate[1]}
+
+    def __setstate__(self, state):
+        self.coordinate = state['x'], state['y']

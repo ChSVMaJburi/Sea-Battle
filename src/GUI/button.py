@@ -9,7 +9,6 @@ def init_pygame() -> None:
     """Проделаем стартовые операции pygame"""
     my_space.IS_PYGAME_INIT = True
     my_space.screen = pygame.display.set_mode(my_space.SIZE)
-    my_space.FONT_SIZE = int(my_space.BLOCK_SIZE / 1.5)
     my_space.FONT = pygame.font.SysFont('notosans', my_space.FONT_SIZE)
     my_space.GAME_OVER = pygame.font.SysFont('notosans', 2 * my_space.BLOCK_SIZE)
 
