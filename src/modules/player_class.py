@@ -50,8 +50,8 @@ class Player(ABC):
             self.last_hits.append(shoot)
         else:
             self.last_hits.append(shoot)
-            for ind in self.last_hits:
-                self.update_dotted_and_hit(ind, False)
+            for ind in range(len(self.last_hits)):
+                self.update_dotted_and_hit(self.last_hits[ind], False)
             self.destroyed_ships.append(copy.deepcopy(self.last_hits))
             self.last_hits.clear()
 
