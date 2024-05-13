@@ -8,6 +8,7 @@ stages:
   - deliver
 
 BuildCode:
+  image: python:3.10
   stage: build
   tags:
     - common
