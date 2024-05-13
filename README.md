@@ -28,7 +28,7 @@
 
 ---
 
-    git clone git@gitlab.akhcheck.ru:Aminov_Sh/TP_Sea_Battle.git
+    git clone git@github.com:ChSVMaJburi/Sea-Battle.git
 
 Установите нужные библиотеки
 
