@@ -3,6 +3,7 @@ FROM python:3.10
 
 LABEL authors="shahrom-aminov"
 RUN pip install requests pygame
+ENV DISPLAY=host.docker.internal:0.0
 
 WORKDIR .
 
