@@ -16,13 +16,13 @@ BuildCode:
     - apt-get update -qy
     - apt install -y python3-pip
     - apt install -y python3-pygame
-    - apt install -y python3-pytest
 
 TestCode:
   stage: test
   tags:
     - common
   script:
+    - pip install pytest
     - PYTHONPATH=src python -m pytest --cov src tests
   artifacts:
     paths:
