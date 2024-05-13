@@ -1,3 +1,8 @@
 pygame
 asyncio
 pyinstaller
+pytest-cov
+pytest
+coverage
+requests
+requests-mock
