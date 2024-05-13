@@ -1,0 +1,27 @@
+default:
+  tags:
+    - common
+
+stages:
+  - build
+  - test
+  - deliver
+
+BuildCode:
+  stage: build
+  tags:
+    - common
+  script:
+    - apt-get update -qy
+    - apt-get install -y pygame
+
+TestCode:
+  stage: test
+  tags:
+    - common
+  script:
+    - PYTHONPATH=src python -m pytest --cov src tests
+  artifacts:
+    paths:
+      - coverage.xml
+  coverage: '/TOTAL\s+(\d+%)$/'

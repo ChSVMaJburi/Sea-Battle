@@ -20,4 +20,3 @@ class TestYourFunction(unittest.TestCase):
     def test_your_function_1(self, mock_input):
         play_console_type()
         self.assertTrue(mock_input.called)
-
