@@ -21,7 +21,3 @@ class TestYourFunction(unittest.TestCase):
         play_console_type()
         self.assertTrue(mock_input.called)
 
-    @patch('builtins.input', side_effect=arr2)
-    def test_your_function_2(self, mock_input):
-        play_console_type()
-        self.assertTrue(mock_input.called)

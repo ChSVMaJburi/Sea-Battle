@@ -45,7 +45,8 @@ def get_coordinates_from_console(player: Player) -> Point:
         "Ваш ход.\nВведите пожалуйста координаты в формате: \"A1\"(буква и число)")
     if (len(coordinate) != 2 or not check_valid_number(coordinate[1]) or
             not check_valid_letter(coordinate[0])):
-        if not (len(coordinate) == 3 and check_valid_number(coordinate[1:3]) and check_valid_letter(coordinate[0])):
+        if not (len(coordinate) == 3 and check_valid_number(coordinate[1:3])
+                and check_valid_letter(coordinate[0])):
             print_error()
             return get_coordinates_from_console(player)
     answer = Point(int(coordinate[1] + (coordinate[2] if len(coordinate) == 3 else "")),
