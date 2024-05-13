@@ -43,7 +43,6 @@ class TestPlayer(unittest.TestCase):
         assert not self.player.destroyed_ships
 
     def test_clear_last_hits_after_destroyed_ship(self):
-        # Test clearing last hits after a ship is destroyed
         shot = Point(3, 4)
         self.player.ship_manager.ships_copy = [[Point(3, 4)]]
         self.player.check_is_successful_hit(shot)
@@ -96,6 +95,7 @@ class TestPlayer(unittest.TestCase):
         self.assertIn(shot, self.player.to_shot)
 
     def test_add_to_injured_successful(self):
+        self.player.ship_manager.ships_copy = [[Point(4, 5), Point(4, 6)], [Point(6, 7)]]
         shot = Point(2, 3)
         self.player.check_is_successful_hit(shot)
         self.assertNotIn(shot, self.player.injured)
