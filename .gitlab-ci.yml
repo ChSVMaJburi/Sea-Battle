@@ -14,7 +14,8 @@ BuildCode:
     - common
   script:
     - apt-get update -qy
-    - apt-get install -y pygame
+    - apt install -y python3-pip
+    - apt install -y python3-pygame
 
 TestCode:
   stage: test
