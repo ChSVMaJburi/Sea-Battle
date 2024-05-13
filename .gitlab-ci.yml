@@ -23,7 +23,7 @@ TestCode:
     - common
   script:
     - pip install -r requirements.txt
-    - PYTHONPATH=src python -m pytest --cov src tests
+    - PYTHONPATH=src python -m pytest --cov=src --cov-report=xml tests
   artifacts:
     paths:
       - coverage.xml
